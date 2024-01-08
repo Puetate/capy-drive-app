@@ -5,7 +5,10 @@ import { IconUsers } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const links = [{ label: "Usuarios", href: "/admin/users", icon: IconUsers }];
+const links = [
+  { label: "Usuarios", href: "/admin/users", icon: IconUsers },
+  { label: "Roles", href: "/admin/roles", icon: IconUsers }
+];
 
 export default function NavLinks({ onPathChange }: { onPathChange: (label: string) => void }) {
   const pathname = usePathname();
