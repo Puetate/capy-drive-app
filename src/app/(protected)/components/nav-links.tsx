@@ -7,7 +7,9 @@ import { useEffect } from "react";
 
 const links = [
   { label: "Usuarios", href: "/admin/users", icon: IconUsers },
-  { label: "Roles", href: "/admin/roles", icon: IconUsers }
+  { label: "Roles", href: "/admin/roles", icon: IconUsers },
+  { label: "Campus", href: "/admin/campus", icon: IconUsers },
+  { label: "Facultades", href: "/admin/faculties", icon: IconUsers }
 ];
 
 export default function NavLinks({ onPathChange }: { onPathChange: (label: string) => void }) {
