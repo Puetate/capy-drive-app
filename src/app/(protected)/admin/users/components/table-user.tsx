@@ -1,5 +1,5 @@
 "use client";
-import { ActionIcon, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
 import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
 import { getUsersService } from "../services/getUsers.service";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -93,16 +93,16 @@ export default function TableUser() {
     const UsersColumns = useMemo<DataTableColumn<User>[]>(
         () => [
             { accessor: "fullName", title: "Nombre" },
-            { accessor: "phone", title: "Teléfono" },
             { accessor: "dni", title: "DNI" },
             { accessor: "email", title: "Email" },
+            { accessor: "phone", title: "Teléfono" },
             // { accessor: "role", title: "Roles" },
             {
                 accessor: "role",
                 title: "Roles",
                 render: (user) => (<Group className="">
                     <Each of={user.roles as Role[]} render={(item, index) =>
-                        <Chip key={index} color="cyan" checked={true} icon={null} >{`${item.name}`} </Chip>
+                        <Badge key={index} radius="md" size="lg" color="cyan" >{`${item.name}`} </Badge>
                     }></Each>
                 </Group>)
             },
