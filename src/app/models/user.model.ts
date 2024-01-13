@@ -23,5 +23,6 @@ export interface User {
 	email: string,
 	// status: boolean,
 	roles: Role[] | string[],
-	role?: string
+	role?: string,
+	password?:string
 }
