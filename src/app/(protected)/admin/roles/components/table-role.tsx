@@ -17,7 +17,7 @@ export default function TableRole() {
             if (res.error || res.data === null) return
             const rolesData = res.data;
              */
-        const rolesData: Role[] = [{ rolName: "Super Admin" }, { rolName: "Admin" }, { rolName: "Secretaria" }];
+        const rolesData: Role[] = [{ name: "Super Admin" }, { name: "Admin" }, { name: "Secretaria" }];
         // await new Promise((resolve) => setTimeout(resolve, 1000));
         setListRoles(rolesData);
     };
