@@ -14,7 +14,6 @@ interface RoleData {
     label: string;
 }
 
-
 const initialValues: User = {
     id: 0,
     names: "",
@@ -25,15 +24,17 @@ const initialValues: User = {
     email: "",
     roles: [],
     role: "",
+    password: ""
 }
 
 const validationSchema = Yup.object<User>().shape({
-    identification: Yup.string().required("La identificación es obligatoria"),
+    dni: Yup.string().required("La identificación es obligatoria"),
+    names: Yup.string().required("Los nombres son obligatorio"),
+    surnames: Yup.string().required("Los apellidos son obligatorio"),
+    // status: Yup.string().required("La estado es obligatorio"),
     email: Yup.string().required("El correo es obligatorio"),
-    fullName: Yup.string().required("El nombre completo es obligatorio"),
-    status: Yup.string().required("La estado es obligatorio"),
-    role: Yup.string().required("La estado es obligatorio"),
-    telephone: Yup.string().required("El teléfono es obligatorio"),
+    phone: Yup.string().required("El teléfono es obligatorio"),
+    roles: Yup.array().required("La estado es obligatorio").min(1, "Debe elegir al menos un rol"),
 });
 
 export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
@@ -56,22 +57,24 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     const getRoles = async () => {
         const res = await getRolesService();
         if (res.data === null) return;
-        const roles: RoleData[] = res.data.map((rol) => ({ value: rol.id.toString(), label: rol.rolName }))
+        const roles: RoleData[] = res.data.map((rol) => ({ value: rol.id.toString(), label: rol.name }))
         setListRoles(roles);
+
     };
 
     const handleSubmit = async (formUser: User) => {
         setLoading(true)
-        const roles = formUser.roles.map((role) => ({ id: parseInt(role.toString()), rolName: "" } as Role));
+        const roles = formUser.roles.map((role) => ({ id: parseInt(role.toString()), name: "" } as Role));
         const user: User = { ...formUser, roles: roles };
         if (idRef.current !== 0) {
+            console.log(user);
             const res = await editUserService(idRef.current.toString(), user);
-            if (res.message == null) return setLoading(false)
+            if (res.message === null) return setLoading(false)
             toast.success(res.message);
         } else {
             const res = await saveUserService(user)
-            if (res.data == null) return setLoading(false)
-            toast.success("Usuario creado exitosamente");
+            if (res.message === null) return setLoading(false)
+            toast.success(res.message);
         }
         setLoading(false)
         onSubmitSuccess()
@@ -81,7 +84,6 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     useEffect(() => {
         getRoles();
     }, []);
-
 
 
     return (
@@ -122,6 +124,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
                     />
 
                     <MultiSelect
+                        withAsterisk
                         label="Roles"
                         placeholder="Seleccione"
                         data={listRoles}
