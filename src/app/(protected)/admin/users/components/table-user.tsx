@@ -2,7 +2,7 @@
 import { ActionIcon, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
 import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
 import { getUsersService } from "../services/getUsers.service";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
 import DataTable from "@/components/data-table";
 import { useDisclosure } from "@mantine/hooks";
@@ -10,15 +10,23 @@ import FormUser from "./form-user";
 import Each from "@/lib/utils/each";
 import { Role } from "@/app/models/role.model";
 import { User } from "@/app/models/user.model";
+import { deleteUserService } from "../services/deleteUser.service";
+import { toast } from "sonner";
+import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
+import InputsFilters from "@/app/(protected)/components/InputsFilters";
 
-const titleModal = "Registro Usuario";
+const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
+
 
 export default function TableUser() {
     const [listUsers, setListUsers] = useState<User[]>([]);
     const [opened, { open, close }] = useDisclosure();
+    const [openedDialog, { open: openDialog, close: closeDialog }] = useDisclosure()
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
+    const listUsersRef = useRef<User[]>([]);
 
-    const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.rolName);
+
+    const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.name);
 
     const getUsers = async () => {
         const res = await getUsersService();
@@ -26,16 +34,16 @@ export default function TableUser() {
         if (res.data === null) return
         const users: User[] = res.data.map(user => ({
             ...user,
+            role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
         }));
-        console.log(users);
-
         setListUsers(users);
+        listUsersRef.current = users;
     };
 
     const onClickEditButton = (user: User) => {
         const rolesID: string[] = user.roles.map((rol) => (rol as Role).id.toString())
-        setSelectedUser({ ...user, roles: rolesID });
+        setSelectedUser({ ...user, roles: rolesID, password: "" });
         open()
     }
 
@@ -47,6 +55,35 @@ export default function TableUser() {
     const onClickAddButton = () => {
         setSelectedUser(null);
         open()
+    }
+
+    const onClickDeleteButton = async (user: User) => {
+        setSelectedUser(user)
+        openDialog()
+    }
+
+    const handleDeleteUser = async () => {
+        const { id } = selectedUser!;
+        if (!id) return;
+        const res = await deleteUserService(id);
+        if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
+        toast.success(res.message);
+        await getUsers();
+    }
+
+    const generalFilter = (value: string) => {
+        if (value == "") {
+            return setListUsers(listUsersRef.current);
+        }
+        const filteredList = listUsersRef.current.filter(
+            ({ dni, email, fullName, phone, role }: User) => {
+                const filter = `${dni} ${email} ${fullName} ${role}`;
+                return filter.toLowerCase().includes(value.trim().toLowerCase());
+
+            },
+        );
+        return setListUsers(filteredList);
+
     }
 
     useEffect(() => {
@@ -84,11 +121,11 @@ export default function TableUser() {
                                 <IconEdit />
                             </ActionIcon>
                         </Tooltip>
-                        <Tooltip label="Editar">
+                        <Tooltip label="Eliminar">
                             <ActionIcon
                                 color="red"
                                 variant="light"
-                            // onClick={}
+                                onClick={() => onClickDeleteButton(user)}
                             >
                                 <IconTrash />
                             </ActionIcon>
@@ -105,18 +142,14 @@ export default function TableUser() {
         <Flex direction="column" h="100%" gap=".15rem">
 
             <Group className="mb-3" gap="xl">
-                <TextInput
-                    className="w-1/3"
-                    placeholder="Buscador"
-                />
-                <Button size="md" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconShieldPlus /> </Group></Button>
+                <InputsFilters onChangeFilters={generalFilter} />
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconShieldPlus /> </Group></Button>
             </Group>
             <DataTable columns={UsersColumns} records={listUsers}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >
                 <FormUser onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedUser={selectedUser} />
             </Modal>
+            <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedUser) ? getConfirmMessage(selectedUser!.fullName!) : ""} onConfirm={handleDeleteUser} />
         </Flex>
-
-
     );
 }
