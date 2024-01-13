@@ -5,7 +5,7 @@ import { IconUsers } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-const links = [
+ const links = [
   { label: "Usuarios", href: "/admin/users", icon: IconUsers },
   { label: "Roles", href: "/admin/roles", icon: IconUsers },
   { label: "Campus", href: "/admin/campus", icon: IconUsers },

@@ -1,4 +1,5 @@
 "use client";
+import { Role } from "@/app/models/role.model";
 import DataTable from "@/components/data-table";
 import { ActionIcon, Button, Container, Flex, Group, TextInput, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -6,10 +7,7 @@ import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
 import { DataTableColumn } from "mantine-datatable";
 import { useEffect, useMemo, useState } from "react";
 
-export interface Role {
-    rolName: string;
-}
-export default function RolTable() {
+export default function TableRole() {
     const [listRoles, setListRoles] = useState<Role[]>([]);
     const [opened, { open, close }] = useDisclosure()
 
@@ -19,7 +17,7 @@ export default function RolTable() {
             if (res.error || res.data === null) return
             const rolesData = res.data;
              */
-        const rolesData: Role[] = [{ rolName: "Super Admin" }, { rolName: "Admin" }, { rolName: "Secretaria" }];
+        const rolesData: Role[] = [{ name: "Super Admin" }, { name: "Admin" }, { name: "Secretaria" }];
         // await new Promise((resolve) => setTimeout(resolve, 1000));
         setListRoles(rolesData);
     };
@@ -68,7 +66,7 @@ export default function RolTable() {
 
             <Group className="mb-3" gap="xl">
                 <TextInput
-                className="w-1/3"
+                    className="w-1/3"
                     placeholder="Buscador"
                 />
                 <Button size="md"> <Group><>Crear Rol</> <IconShieldPlus /> </Group></Button>

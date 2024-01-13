@@ -1,6 +1,6 @@
-import RolTable from "./components/rol-table";
+import TableRole from "./components/table-role";
 
 export default function RolesPage() {
-    return <RolTable/>;
+    return <TableRole />;
 
 }
