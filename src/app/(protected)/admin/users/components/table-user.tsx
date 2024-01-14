@@ -1,6 +1,6 @@
 "use client";
 import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
-import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconShieldPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
 import { getUsersService } from "../services/getUsers.service";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
@@ -14,6 +14,7 @@ import { deleteUserService } from "../services/deleteUser.service";
 import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
+import { encriptar } from "./aes";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -53,6 +54,7 @@ export default function TableUser() {
     };
 
     const onClickAddButton = () => {
+        encriptar();
         setSelectedUser(null);
         open()
     }
@@ -83,7 +85,6 @@ export default function TableUser() {
             },
         );
         return setListUsers(filteredList);
-
     }
 
     useEffect(() => {
@@ -143,7 +144,7 @@ export default function TableUser() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconShieldPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconUserPlus /> </Group></Button>
             </Group>
             <DataTable columns={UsersColumns} records={listUsers}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >

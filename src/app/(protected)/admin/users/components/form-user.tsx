@@ -68,7 +68,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
         const user: User = { ...formUser, roles: roles };
         if (idRef.current !== 0) {
             console.log(user);
-            const res = await editUserService(idRef.current.toString(), user);
+            const res = await editUserService(idRef.current, user);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
         } else {
