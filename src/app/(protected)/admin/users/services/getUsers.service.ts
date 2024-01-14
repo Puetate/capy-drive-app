@@ -5,6 +5,5 @@ import { ResponseRequest } from "@/app/models/responseRequest.model";
 export async function getUsersService() {
     const url: string = "/users"
     const res = await API.get<ResponseRequest<User[]>>({ url });
-    console.log(res);
     return res;
 }

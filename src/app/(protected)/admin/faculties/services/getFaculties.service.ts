@@ -1,10 +1,9 @@
-import { User } from "@/app/models/user.model";
 import API from "../../../../../lib/axios/api";
 import { ResponseRequest } from "@/app/models/responseRequest.model";
+import { Faculty } from "@/app/models/faculty.models";
 
-export async function getFacultiesService() {
+export async function getFacultyService() {
     const url: string = "/faculty"
-    const res = await API.get<ResponseRequest<User[]>>({ url });
-    console.log(res);
+    const res = await API.get<ResponseRequest<Faculty[]>>({ url });
     return res;
 }
