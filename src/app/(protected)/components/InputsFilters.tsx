@@ -1,3 +1,4 @@
+"use client"
 import { Flex, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { IconCalendar, IconSearch } from "@tabler/icons-react";

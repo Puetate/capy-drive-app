@@ -5,7 +5,7 @@ interface EachProps<T> {
   of: T[];
 }
 
-const Each: FC<EachProps<any>> = ({ render, of }) =>
+const Each:  <T>({ render, of }: EachProps<T>) => ReactNode = ({ render, of }) =>
   React.Children.toArray(
     of.map((item, index) => render(item, index))
   );

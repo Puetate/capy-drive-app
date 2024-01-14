@@ -1,6 +1,6 @@
 "use client";
-import { ActionIcon, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
-import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
+import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
+import { IconEdit, IconShieldPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
 import { getUsersService } from "../services/getUsers.service";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
@@ -14,6 +14,7 @@ import { deleteUserService } from "../services/deleteUser.service";
 import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
+import { encriptar } from "./aes";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -53,6 +54,7 @@ export default function TableUser() {
     };
 
     const onClickAddButton = () => {
+        encriptar();
         setSelectedUser(null);
         open()
     }
@@ -83,7 +85,6 @@ export default function TableUser() {
             },
         );
         return setListUsers(filteredList);
-
     }
 
     useEffect(() => {
@@ -93,16 +94,16 @@ export default function TableUser() {
     const UsersColumns = useMemo<DataTableColumn<User>[]>(
         () => [
             { accessor: "fullName", title: "Nombre" },
-            { accessor: "phone", title: "Teléfono" },
             { accessor: "dni", title: "DNI" },
             { accessor: "email", title: "Email" },
+            { accessor: "phone", title: "Teléfono" },
             // { accessor: "role", title: "Roles" },
             {
                 accessor: "role",
                 title: "Roles",
                 render: (user) => (<Group className="">
                     <Each of={user.roles as Role[]} render={(item, index) =>
-                        <Chip key={index} color="cyan" checked={true} icon={null} >{`${item.name}`} </Chip>
+                        <Badge key={index} radius="md" size="lg" color="cyan" >{`${item.name}`} </Badge>
                     }></Each>
                 </Group>)
             },
@@ -143,7 +144,7 @@ export default function TableUser() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconShieldPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconUserPlus /> </Group></Button>
             </Group>
             <DataTable columns={UsersColumns} records={listUsers}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >
