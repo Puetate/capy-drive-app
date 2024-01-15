@@ -8,11 +8,9 @@ import { getFacultyService } from "../../faculties/services/getFaculties.service
 import { editCareerService } from "../services/editCareer.service";
 import { saveCareerService } from "../services/saveCareer.service";
 import { Faculty } from "@/app/models/faculty.models";
-
-interface FacultyData {
-    value: string;
-    label: string;
-}
+import { getPeriodsService } from "../../periods/services/getPeriods.service";
+import { AcademicPeriod } from "@/app/models/academicPeriod.model";
+import { DataSelect } from "../../users/components/form-user";
 
 const initialValues: Career = {
     id: 0,
@@ -25,13 +23,14 @@ const validationSchema = Yup.object<Career>().shape({
     faculty: Yup.string().required("La facultad es obligatoria")
 });
 
-export default function FormCareer({ onSubmitSuccess, onCancel, selectedCareer }:
+export default function FormCareerAcadPeriod({ onSubmitSuccess, onCancel, selectedCareer }:
     {
         onSubmitSuccess: () => void,
         onCancel: () => void,
         selectedCareer: Career | null
     }) {
-    const [listFaculties, setListFaculties] = useState<FacultyData[]>([]);
+    const [listFaculties, setListFaculties] = useState<DataSelect[]>([]);
+    const [listAcademicPeriods, setListAcademicPeriods] = useState<DataSelect[]>([]);
     const [loading, setLoading] = useState(false);
     const idRef = useRef<number>(selectedCareer?.id || 0);
 
@@ -45,9 +44,16 @@ export default function FormCareer({ onSubmitSuccess, onCancel, selectedCareer }
     const getFaculties = async () => {
         const res = await getFacultyService();
         if (res.data === null) return;
-        const faculties: FacultyData[] = res.data.map((faculty) => ({ value: faculty.id.toString(), label: faculty.name }))
+        const faculties: DataSelect[] = res.data.map((faculty) => ({ value: faculty.id.toString(), label: faculty.name }))
         setListFaculties(faculties);
 
+    };
+
+    const getAcademicPeriod = async () => {
+        const res = await getPeriodsService();
+        if (res.data === null) return;
+        const academicPeriod: DataSelect[] = res.data.map((academicPeriod) => ({ value: academicPeriod.id.toString(), label: academicPeriod.name }));
+        setListAcademicPeriods(academicPeriod);
     };
 
     const handleSubmit = async (formCareer: Career) => {
@@ -68,6 +74,7 @@ export default function FormCareer({ onSubmitSuccess, onCancel, selectedCareer }
 
     useEffect(() => {
         getFaculties();
+        getAcademicPeriod();
     }, []);
 
     return (
@@ -78,19 +85,24 @@ export default function FormCareer({ onSubmitSuccess, onCancel, selectedCareer }
                 <Flex direction="column" gap="md">
 
                     <TextInput
-                        withAsterisk
+                        disabled
                         label="Nombre de Carrera"
                         {...form.getInputProps("name")}
                     />
 
-                    <Select
-                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
-
-                        withAsterisk
+                    <TextInput
+                        disabled
                         label="Facultad"
-                        placeholder="Seleccione"
-                        data={listFaculties}
                         {...form.getInputProps("faculty")}
+                    />
+
+                    <MultiSelect                        
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+                        withAsterisk
+                        label="Periodos Académicos"
+                        placeholder="Seleccione"
+                        data={listAcademicPeriods}
+                        {...form.getInputProps("careers")}
                     />
                 </Flex>
                 <Flex justify="space-between" mt="lg">
