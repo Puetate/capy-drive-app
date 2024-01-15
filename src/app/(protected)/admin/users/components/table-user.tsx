@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
 import { encriptar } from "./aes";
+import { Career } from "@/app/models/career.model";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -28,15 +29,18 @@ export default function TableUser() {
 
 
     const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.name);
+    const getCareersNames = (userRolesArray: Career[]) => userRolesArray.map((career) => career.name);
 
     const getUsers = async () => {
         const res = await getUsersService();
+        console.log(res.data);
 
         if (res.data === null) return
         const users: User[] = res.data.map(user => ({
             ...user,
             role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
+            career: getRolesNames(user.careers as Career[]).join(", "),
         })); 
         setListUsers(users);
         listUsersRef.current = users;
@@ -44,7 +48,8 @@ export default function TableUser() {
 
     const onClickEditButton = (user: User) => {
         const rolesID: string[] = user.roles.map((rol) => (rol as Role).id.toString())
-        setSelectedUser({ ...user, roles: rolesID, password: "" });
+        const careersID: string[] = user.careers.map((career) => (career as Career).id.toString())
+        setSelectedUser({ ...user, roles: rolesID, password: "", careers:careersID });
         open()
     }
 
@@ -77,12 +82,11 @@ export default function TableUser() {
     const generalFilter = (value: string) => {
         if (value == "") {
             return setListUsers(listUsersRef.current);
-        }
+        } 
         const filteredList = listUsersRef.current.filter(
-            ({ dni, email, fullName, role }: User) => {
-                const filter = `${dni} ${email} ${fullName} ${role}`;
+            ({ dni, email, fullName, role, career }: User) => {
+                const filter = `${dni} ${email} ${fullName} ${role} ${career}` ;
                 return filter.toLowerCase().includes(value.trim().toLowerCase());
-
             },
         );
         return setListUsers(filteredList);
@@ -104,6 +108,15 @@ export default function TableUser() {
                 title: "Roles",
                 render: (user) => (<Group className="">
                     <Each of={user.roles as Role[]} render={(item, index) =>
+                        <Badge key={index} radius="md" size="lg" color="orange" >{`${item.name}`} </Badge>
+                    }></Each>
+                </Group>)
+            },
+            {
+                accessor: "career",
+                title: "Carreras",
+                render: (user) => (<Group className="">
+                    <Each of={user.careers as Role[]} render={(item, index) =>
                         <Badge key={index} radius="md" size="lg" color="cyan" >{`${item.name}`} </Badge>
                     }></Each>
                 </Group>)
@@ -123,7 +136,7 @@ export default function TableUser() {
                                 <IconEdit />
                             </ActionIcon>
                         </Tooltip>
-                        <Tooltip label="Eliminar">
+                        {/* <Tooltip label="Eliminar">
                             <ActionIcon
                                 color="red"
                                 variant="light"
@@ -131,7 +144,7 @@ export default function TableUser() {
                             >
                                 <IconTrash />
                             </ActionIcon>
-                        </Tooltip>
+                        </Tooltip> */}
                     </Group>
                 ),
                 textAlignment: "center"
@@ -148,7 +161,7 @@ export default function TableUser() {
                 <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconUserPlus /> </Group></Button>
             </Group>
             <DataTable columns={UsersColumns} records={listUsers}></DataTable>
-            <Modal opened={opened} onClose={close} withCloseButton={false} >
+            <Modal size="md" opened={opened} onClose={close} withCloseButton={false} >
                 <FormUser onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedUser={selectedUser} />
             </Modal>
             <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedUser) ? getConfirmMessage(selectedUser!.fullName!) : ""} onConfirm={handleDeleteUser} />

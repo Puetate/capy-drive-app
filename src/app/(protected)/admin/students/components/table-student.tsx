@@ -1,5 +1,5 @@
 "use client";
-import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, Select, TextInput, Tooltip } from "@mantine/core";
 import { IconEdit, IconFileTypeXls, IconShieldPlus, IconTrash, IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
@@ -13,6 +13,9 @@ import { Student } from "@/app/models/student.model";
 import FormStudent from "./form-student";
 import FormUpExcel from "./form-up-excel";
 import getStudentsService from "../services/getStudents.service";
+import { getCareersService } from "../../careers/services/getCareers.service";
+import { DataSelect } from "../../users/components/form-user";
+import { Faculty } from "@/app/models/faculty.models";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -23,19 +26,28 @@ export default function TableStudent() {
     const [openedDialog, { open: openDialog, close: closeDialog }] = useDisclosure()
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
     const listStudentsRef = useRef<Student[]>([]);
-
+    const [valueCareer, setValueCareer] = useState<string>('');
+    const [labelCareer, setLabelCareer] = useState<string>('');
+    const [listCareers, setListCareers] = useState<DataSelect[]>([]);
 
     const getStudents = async () => {
-        const res = await getStudentsService();
-
+        const res = await getStudentsService(valueCareer!);
         if (res.data === null) return
         const users: Student[] = res.data.map(user => ({
             ...user,
             fullName: `${user.names} ${user.surnames}`,
-            career: "Software"
+            career: labelCareer
         }));
         setListStudents(users);
         listStudentsRef.current = users;
+    };
+
+    const getCareers = async () => {
+        const res = await getCareersService();
+        if (res.data === null) return;
+        const careers: DataSelect[] = res.data.map((career) => ({ value: career.id.toString(), label: `${(career.faculty as Faculty).name} - ${career.name}` }))
+        setListCareers(careers);
+
     };
 
     const onClickEditButton = (user: Student) => {
@@ -80,8 +92,20 @@ export default function TableStudent() {
         return setListStudents(filteredList);
     }
 
-    useEffect(() => {
+    const onChangeSelect = (selectedOption: DataSelect) => {
+        if (selectedOption === null) {
+            setListStudents([]);
+            listStudentsRef.current = [];
+            return;
+        }
+        setValueCareer(selectedOption.value);
+        setLabelCareer(selectedOption.label);
+
         getStudents();
+    }
+
+    useEffect(() => {
+        getCareers();
     }, []);
 
     const StudentsColumns = useMemo<DataTableColumn<Student>[]>(
@@ -125,8 +149,16 @@ export default function TableStudent() {
 
     return (
         <Flex direction="column" h="100%" gap=".15rem">
-
-            <Group className="mb-3" gap="xl">
+            <Group align="end" className="mb-3" gap="xl">
+                <Select
+                    comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+                    className="text-black"
+                    withAsterisk
+                    label="Carrera"
+                    placeholder="Seleccione"
+                    data={listCareers}
+                    onChange={(value: string | null, option: DataSelect) => onChangeSelect(option)}
+                />
                 <InputsFilters onChangeFilters={generalFilter} />
                 <Button size="sm" onClick={onClickAddButton} > <Group><>Cargar Excel</> <IconFileTypeXls /> </Group></Button>
             </Group>
@@ -138,6 +170,7 @@ export default function TableStudent() {
                 <FormUpExcel onCancel={closeExcel} onSubmitSuccess={onSubmitSuccess} selectedStudent={selectedStudent} />
             </Modal>
             <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedStudent) ? getConfirmMessage(selectedStudent!.fullName!) : ""} onConfirm={handleDeleteStudent} />
+
         </Flex>
     );
 }

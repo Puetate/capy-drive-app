@@ -15,13 +15,13 @@ interface AcademicPeriodData {
 
 const initialValues: TemplateModel = {
     id: 0,
-    templateName: "",
+    name: "",
     folders: [],
     period: 0,
 }
 
 const validationSchema = Yup.object<TemplateModel>().shape({
-    templateName: Yup.string().required("El nombre de la plantilla es obligatorio"),
+    name: Yup.string().required("El nombre de la plantilla es obligatorio"),
     period: Yup.number().required("El periodo académico es obligatorio"),
     folders: Yup.array().required("Las carpetas son obligatorias").min(1, "Debe ingresar al menos una carpeta"),
 });
@@ -45,7 +45,7 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
 
     const getAcademicPeriods = async () => {
         const res = await getPeriodsService();
-        if (res.data === null) return; 
+        if (res.data === null) return;
         const periods: AcademicPeriodData[] = res.data.map((periods) => ({ value: periods.id.toString(), label: periods.name }))
         setListAcademicPeriods(periods);
     };
@@ -99,10 +99,12 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
                         withAsterisk
                         disabled={(idRef.current != 0) ? true : false}
                         label="Nombre de la plantilla"
-                        {...form.getInputProps("templateName")}
+                        {...form.getInputProps("name")}
                     />
 
                     <Select
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+
                         withAsterisk
                         label="Periodo Académico"
                         placeholder="Seleccione"

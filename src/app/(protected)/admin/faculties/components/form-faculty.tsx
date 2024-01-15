@@ -41,7 +41,7 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
             initialValues,
         validate: yupResolver(validationSchema)
     });
-    
+
     const getCampus = async () => {
         const res = await getCampusService();
         if (res.data === null) return;
@@ -66,9 +66,9 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
             ...formFaculty,
             campus: campusId,
         };
-        
+
         if (idRef.current !== 0) {
-            
+
             const res = await editFacultyService(idRef.current.toString(), faculty);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
@@ -101,6 +101,8 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
                     />
 
                     <Select
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+
                         withAsterisk
                         label="Campus"
                         placeholder="Seleccione"

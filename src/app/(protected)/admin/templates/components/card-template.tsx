@@ -19,7 +19,7 @@ export default function CardTemplate({ templates, onEditTemplate }: { templates:
                         <Group className='flex flex-row justify-between ml-3 mt-3'>
                             <Group>
                                 <IconFolders />
-                                <Text fw={500}>{item.templateName}</Text>
+                                <Text fw={500}>{item.name}</Text>
                             </Group>
                             <ActionIcon className='mr-3' variant="transparent" aria-label="Settings" onClick={() => onEditTemplate(item)}>
                                 <IconPencil color='black' stroke={1.5} />
@@ -35,7 +35,7 @@ export default function CardTemplate({ templates, onEditTemplate }: { templates:
                             }>
                             </Each>
                         </Group>
-                        <Text className='ml-3 mt-1 text-xs text-gray-500 text-right'>Creado: <span>{(item.period as AcademicPeriod).name}</span></Text>
+                        <Text className='ml-3 mt-1 text-xs text-gray-500 text-right'>Creado: <span>{item.createdAt!}</span></Text>
                     </div>
                 </Card>
             } ></Each>

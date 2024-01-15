@@ -1,5 +1,5 @@
 "use client"
-import { Button, Flex, MultiSelect, PasswordInput, Select, Text, TextInput } from "@mantine/core";
+import { Button, Flex, Group, MultiSelect, PasswordInput, Select, Text, TextInput } from "@mantine/core";
 import * as Yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { useForm, yupResolver } from "@mantine/form";
@@ -9,8 +9,11 @@ import { saveUserService } from "../services/saveUser.service";
 import { toast } from "sonner";
 import { getRolesService } from "../../roles/services/getRoles.service";
 import { Role } from "@/app/models/role.model";
+import { getCareersService } from "../../careers/services/getCareers.service";
+import { Faculty } from "@/app/models/faculty.models";
+import { Career } from "@/app/models/career.model";
 
-interface RoleData {
+export interface DataSelect {
     value: string;
     label: string;
 }
@@ -25,7 +28,8 @@ const initialValues: User = {
     email: "",
     roles: [],
     role: "",
-    password: ""
+    password: "",
+    careers: []
 }
 
 const validationSchema = Yup.object<User>().shape({
@@ -36,6 +40,7 @@ const validationSchema = Yup.object<User>().shape({
     email: Yup.string().required("El correo es obligatorio"),
     phone: Yup.string().required("El teléfono es obligatorio"),
     roles: Yup.array().required("La estado es obligatorio").min(1, "Debe elegir al menos un rol"),
+    careers: Yup.array().required("La estado es obligatorio").min(1, "Debe elegir al menos una carrera"),
 });
 
 export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
@@ -44,7 +49,8 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
         onCancel: () => void,
         selectedUser: User | null
     }) {
-    const [listRoles, setListRoles] = useState<RoleData[]>([]);
+    const [listRoles, setListRoles] = useState<DataSelect[]>([]);
+    const [listCareers, setListCareers] = useState<DataSelect[]>([]);
     const [loading, setLoading] = useState(false);
     const idRef = useRef<number>(selectedUser?.id || 0);
 
@@ -58,15 +64,27 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     const getRoles = async () => {
         const res = await getRolesService();
         if (res.data === null) return;
-        const roles: RoleData[] = res.data.map((rol) => ({ value: rol.id.toString(), label: rol.name }))
+        const roles: DataSelect[] = res.data.map((rol) => ({ value: rol.id.toString(), label: rol.name }))
         setListRoles(roles);
 
     };
 
+    const getCareers = async () => {
+        const res = await getCareersService();
+        if (res.data === null) return;
+        const careers: DataSelect[] = res.data.map((career) => ({ value: career.id.toString(), label: `${(career.faculty as Faculty).name} - ${career.name}` }))
+        setListCareers(careers);
+
+    };
+
+
     const handleSubmit = async (formUser: User) => {
         setLoading(true)
         const roles = formUser.roles.map((role) => ({ id: parseInt(role.toString()), name: "" } as Role));
-        const user: User = { ...formUser, roles: roles };
+        const careers = formUser.careers.map((career) => ({ id: parseInt(career.toString()), name: "" } as Career));
+        const user: User = { ...formUser, roles, careers };
+        console.log(user);
+
         if (idRef.current !== 0) {
             console.log(user);
             const res = await editUserService(idRef.current, user);
@@ -84,6 +102,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
 
     useEffect(() => {
         getRoles();
+        getCareers();
     }, []);
 
 
@@ -101,16 +120,20 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
                         label="Identificación"
                         {...form.getInputProps("dni")}
                     />
-                    <TextInput
-                        withAsterisk
-                        label="Nombres"
-                        {...form.getInputProps("names")}
-                    />
-                    <TextInput
-                        withAsterisk
-                        label="Apellidos"
-                        {...form.getInputProps("surnames")}
-                    />
+
+                    <div className="flex flex-row gap-3" >
+
+                        <TextInput
+                            withAsterisk
+                            label="Nombres"
+                            {...form.getInputProps("names")}
+                        />
+                        <TextInput
+                            withAsterisk
+                            label="Apellidos"
+                            {...form.getInputProps("surnames")}
+                        />
+                    </div>
                     <TextInput
                         width="1"
                         withAsterisk
@@ -125,6 +148,18 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
                     />
 
                     <MultiSelect
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+
+                        withAsterisk
+                        label="Carrera"
+                        placeholder="Seleccione"
+                        data={listCareers}
+                        {...form.getInputProps("careers")}
+                    />
+
+                    <MultiSelect
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+
                         withAsterisk
                         label="Roles"
                         placeholder="Seleccione"
