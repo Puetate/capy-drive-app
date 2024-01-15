@@ -1,98 +1,93 @@
 "use client";
 import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
 import { IconEdit, IconShieldPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
-import { getUsersService } from "../services/getUsers.service";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
 import DataTable from "@/components/data-table";
 import { useDisclosure } from "@mantine/hooks";
-import FormUser from "./form-user";
+import FormCareer from "./form-career";
 import Each from "@/lib/utils/each";
-import { Role } from "@/app/models/role.model";
-import { User } from "@/app/models/user.model";
-import { deleteUserService } from "../services/deleteUser.service";
 import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
-import { encriptar } from "./aes";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
 
-export default function TableUser() {
-    const [listUsers, setListUsers] = useState<User[]>([]);
+export default function TableCareer() {
+    const [listCareers, setListCareers] = useState<Career[]>([]);
     const [opened, { open, close }] = useDisclosure();
     const [openedDialog, { open: openDialog, close: closeDialog }] = useDisclosure()
-    const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const listUsersRef = useRef<User[]>([]);
+    const [selectedCareer, setSelectedCareer] = useState<Career | null>(null)
+    const listCareersRef = useRef<Career[]>([]);
 
 
     const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.name);
 
-    const getUsers = async () => {
-        const res = await getUsersService();
+    const getCareers = async () => {
+        const res = await getCareersService();
 
         if (res.data === null) return
-        const users: User[] = res.data.map(user => ({
+        const users: Career[] = res.data.map(user => ({
             ...user,
             role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
         }));
-        setListUsers(users);
-        listUsersRef.current = users;
+        setListCareers(users);
+        listCareersRef.current = users;
     };
 
-    const onClickEditButton = (user: User) => {
+    const onClickEditButton = (user: Career) => {
         const rolesID: string[] = user.roles.map((rol) => (rol as Role).id.toString())
-        setSelectedUser({ ...user, roles: rolesID, password: "" });
+        setSelectedCareer({ ...user, roles: rolesID, password: "" });
         open()
     }
 
     const onSubmitSuccess = async () => {
         close()
-        await getUsers()
+        await getCareers()
     };
 
     const onClickAddButton = () => {
         encriptar();
-        setSelectedUser(null);
+        setSelectedCareer(null);
         open()
     }
 
-    const onClickDeleteButton = async (user: User) => {
-        setSelectedUser(user)
+    const onClickDeleteButton = async (user: Career) => {
+        setSelectedCareer(user)
         openDialog()
     }
 
-    const handleDeleteUser = async () => {
-        const { id } = selectedUser!;
+    const handleDeleteCareer = async () => {
+        const { id } = selectedCareer!;
         if (!id) return;
-        const res = await deleteUserService(id);
+        const res = await deleteCareerService(id);
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
         toast.success(res.message);
-        await getUsers();
+        await getCareers();
         closeDialog();
     }
 
     const generalFilter = (value: string) => {
         if (value == "") {
-            return setListUsers(listUsersRef.current);
+            return setListCareers(listCareersRef.current);
         }
-        const filteredList = listUsersRef.current.filter(
-            ({ dni, email, fullName, role }: User) => {
+        const filteredList = listCareersRef.current.filter(
+            ({ dni, email, fullName, role }: Career) => {
                 const filter = `${dni} ${email} ${fullName} ${role}`;
                 return filter.toLowerCase().includes(value.trim().toLowerCase());
 
             },
         );
-        return setListUsers(filteredList);
+        return setListCareers(filteredList);
     }
 
     useEffect(() => {
-        getUsers();
+        getCareers();
     }, []);
 
-    const UsersColumns = useMemo<DataTableColumn<User>[]>(
+    const CareersColumns = useMemo<DataTableColumn<Career>[]>(
         () => [
             { accessor: "fullName", title: "Nombre" },
             { accessor: "dni", title: "DNI" },
@@ -145,13 +140,13 @@ export default function TableUser() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconUserPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconCareerPlus /> </Group></Button>
             </Group>
-            <DataTable columns={UsersColumns} records={listUsers}></DataTable>
+            <DataTable columns={CareersColumns} records={listCareers}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >
-                <FormUser onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedUser={selectedUser} />
+                <FormCareer onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedCareer={selectedCareer} />
             </Modal>
-            <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedUser) ? getConfirmMessage(selectedUser!.fullName!) : ""} onConfirm={handleDeleteUser} />
+            <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedCareer) ? getConfirmMessage(selectedCareer!.fullName!) : ""} onConfirm={handleDeleteCareer} />
         </Flex>
     );
 }

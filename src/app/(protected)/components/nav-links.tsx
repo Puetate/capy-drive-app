@@ -1,7 +1,7 @@
 "use client";
 import NextNavLink from "@/components/next-nav-link";
 import { cn } from "@/lib/utils/cn";
-import { IconFolder, IconSchool, IconShield, IconUsers } from "@tabler/icons-react";
+import { IconCardsFilled, IconFolder, IconSchool, IconShield, IconUsers, IconUsersGroup } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -9,7 +9,9 @@ import { useEffect } from "react";
   { label: "Usuarios", href: "/admin/users", icon: IconUsers },
   { label: "Roles", href: "/admin/roles", icon: IconShield },
   { label: "Plantillas/Carpetas", href: "/admin/templates", icon: IconFolder },
-  { label: "Periodos Académicos", href: "/admin/periods", icon: IconSchool }
+  { label: "Periodos Académicos", href: "/admin/periods", icon: IconSchool },
+  { label: "Estudiantes", href: "/admin/students", icon: IconUsersGroup },
+  { label: "Carreras", href: "/admin/careers", icon: IconCardsFilled },
 ];
 
 export default function NavLinks({ onPathChange }: { onPathChange: (label: string) => void }) {

@@ -1,113 +1,96 @@
 "use client";
 import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
-import { IconEdit, IconShieldPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
-import { getUsersService } from "../services/getUsers.service";
+import { IconEdit, IconFileTypeXls, IconShieldPlus, IconTrash, IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataTableColumn } from "mantine-datatable";
 import DataTable from "@/components/data-table";
 import { useDisclosure } from "@mantine/hooks";
-import FormUser from "./form-user";
 import Each from "@/lib/utils/each";
-import { Role } from "@/app/models/role.model";
-import { User } from "@/app/models/user.model";
-import { deleteUserService } from "../services/deleteUser.service";
 import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
-import { encriptar } from "./aes";
+import { Student } from "@/app/models/student.model";
+import FormStudent from "./form-student";
+import FormUpExcel from "./form-up-excel";
+import getStudentsService from "../services/getStudents.service";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
-
-export default function TableUser() {
-    const [listUsers, setListUsers] = useState<User[]>([]);
+export default function TableStudent() {
+    const [listStudents, setListStudents] = useState<Student[]>([]);
     const [opened, { open, close }] = useDisclosure();
+    const [openedUpExcel, { open: openExcel, close: closeExcel }] = useDisclosure();
     const [openedDialog, { open: openDialog, close: closeDialog }] = useDisclosure()
-    const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const listUsersRef = useRef<User[]>([]);
+    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+    const listStudentsRef = useRef<Student[]>([]);
 
 
-    const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.name);
-
-    const getUsers = async () => {
-        const res = await getUsersService();
+    const getStudents = async () => {
+        const res = await getStudentsService();
 
         if (res.data === null) return
-        const users: User[] = res.data.map(user => ({
+        const users: Student[] = res.data.map(user => ({
             ...user,
-            role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
+            career: "Software"
         }));
-        setListUsers(users);
-        listUsersRef.current = users;
+        setListStudents(users);
+        listStudentsRef.current = users;
     };
 
-    const onClickEditButton = (user: User) => {
-        const rolesID: string[] = user.roles.map((rol) => (rol as Role).id.toString())
-        setSelectedUser({ ...user, roles: rolesID, password: "" });
+    const onClickEditButton = (user: Student) => {
         open()
     }
 
     const onSubmitSuccess = async () => {
         close()
-        await getUsers()
+        await getStudents()
     };
 
     const onClickAddButton = () => {
-        encriptar();
-        setSelectedUser(null);
-        open()
+        setSelectedStudent(null);
+        openExcel()
     }
 
-    const onClickDeleteButton = async (user: User) => {
-        setSelectedUser(user)
+    const onClickDeleteButton = async (user: Student) => {
+        setSelectedStudent(user)
         openDialog()
     }
 
-    const handleDeleteUser = async () => {
-        const { id } = selectedUser!;
+    const handleDeleteStudent = async () => {
+        /* const { id } = selectedStudent!;
         if (!id) return;
-        const res = await deleteUserService(id);
+        const res = await deleteStudentService(id);
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
-        toast.success(res.message);
-        await getUsers();
-        closeDialog();
+         toast.success(res.message);*/
+        await getStudents();
     }
 
     const generalFilter = (value: string) => {
         if (value == "") {
-            return setListUsers(listUsersRef.current);
+            return setListStudents(listStudentsRef.current);
         }
-        const filteredList = listUsersRef.current.filter(
-            ({ dni, email, fullName, role }: User) => {
-                const filter = `${dni} ${email} ${fullName} ${role}`;
+        const filteredList = listStudentsRef.current.filter(
+            ({ dni, email, fullName }: Student) => {
+                const filter = `${dni} ${email} ${fullName}`;
                 return filter.toLowerCase().includes(value.trim().toLowerCase());
 
             },
         );
-        return setListUsers(filteredList);
+        return setListStudents(filteredList);
     }
 
     useEffect(() => {
-        getUsers();
+        getStudents();
     }, []);
 
-    const UsersColumns = useMemo<DataTableColumn<User>[]>(
+    const StudentsColumns = useMemo<DataTableColumn<Student>[]>(
         () => [
             { accessor: "fullName", title: "Nombre" },
             { accessor: "dni", title: "DNI" },
             { accessor: "email", title: "Email" },
             { accessor: "phone", title: "Teléfono" },
-            // { accessor: "role", title: "Roles" },
-            {
-                accessor: "role",
-                title: "Roles",
-                render: (user) => (<Group className="">
-                    <Each of={user.roles as Role[]} render={(item, index) =>
-                        <Badge key={index} radius="md" size="lg" color="cyan" >{`${item.name}`} </Badge>
-                    }></Each>
-                </Group>)
-            },
+            { accessor: "career", title: "Carrera" },
             {
                 titleClassName: "text-center",
                 accessor: "actions",
@@ -145,13 +128,16 @@ export default function TableUser() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Usuario</> <IconUserPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Cargar Excel</> <IconFileTypeXls /> </Group></Button>
             </Group>
-            <DataTable columns={UsersColumns} records={listUsers}></DataTable>
+            <DataTable columns={StudentsColumns} records={listStudents}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >
-                <FormUser onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedUser={selectedUser} />
+                <FormStudent onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedStudent={selectedStudent} />
             </Modal>
-            <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedUser) ? getConfirmMessage(selectedUser!.fullName!) : ""} onConfirm={handleDeleteUser} />
+            <Modal size="lg" opened={openedUpExcel} onClose={closeExcel} withCloseButton={false} >
+                <FormUpExcel onCancel={closeExcel} onSubmitSuccess={onSubmitSuccess} selectedStudent={selectedStudent} />
+            </Modal>
+            <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedStudent) ? getConfirmMessage(selectedStudent!.fullName!) : ""} onConfirm={handleDeleteStudent} />
         </Flex>
     );
 }
