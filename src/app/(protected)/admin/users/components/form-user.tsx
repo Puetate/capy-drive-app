@@ -1,3 +1,4 @@
+"use client"
 import { Button, Flex, MultiSelect, PasswordInput, Select, Text, TextInput } from "@mantine/core";
 import * as Yup from "yup";
 import { useEffect, useRef, useState } from "react";

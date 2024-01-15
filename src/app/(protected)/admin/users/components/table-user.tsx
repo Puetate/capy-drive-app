@@ -37,7 +37,7 @@ export default function TableUser() {
             ...user,
             role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
-        }));
+        })); 
         setListUsers(users);
         listUsersRef.current = users;
     };

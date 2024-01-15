@@ -4,5 +4,5 @@ export interface TemplateModel {
     id:number,
     templateName: string,
     folders: string[],
-    period: AcademicPeriod | string
+    period: AcademicPeriod | string | number
 }

@@ -3,30 +3,21 @@ import * as Yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { useForm, yupResolver } from "@mantine/form";
 import { toast } from "sonner";
-import { Role } from "@/app/models/role.model";
 import { TemplateModel } from "@/app/models/templateModel.model";
 import saveTemplateService from "../services/saveTemplate.service";
 import editTemplateService from "../services/editTemplate.service";
-import { AcademicPeriod } from "@/app/models/academicPeriod.model";
+import { getPeriodsService } from "../../periods/services/getPeriods.service";
 
 interface AcademicPeriodData {
     value: string;
     label: string;
 }
 
-const periods: AcademicPeriod[] = [
-    { id: 1, name: 'Período 1', dateStart: '2024-01-01', dateEnd: '2024-05-31' },
-    { id: 2, name: 'Período 2', dateStart: '2024-06-01', dateEnd: '2024-10-31' },
-    { id: 3, name: 'Período 3', dateStart: '2024-11-01', dateEnd: '2025-03-31' },
-    { id: 4, name: 'Período 4', dateStart: '2025-04-01', dateEnd: '2025-08-31' },
-    { id: 5, name: 'Período 5', dateStart: '2025-09-01', dateEnd: '2025-12-31' }
-];
-
 const initialValues: TemplateModel = {
     id: 0,
     templateName: "",
     folders: [],
-    period: ""
+    period: 0,
 }
 
 const validationSchema = Yup.object<TemplateModel>().shape({
@@ -53,21 +44,37 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
     });
 
     const getAcademicPeriods = async () => {
-        /* const res = await getAcademicPeriodsService();
-        if (res.data === null) return; */
-        const academicPeriods: AcademicPeriodData[] = periods.map((period) => ({ value: period.id.toString(), label: period.name }))
-        setListAcademicPeriods(academicPeriods);
-
+        const res = await getPeriodsService();
+        if (res.data === null) return; 
+        const periods: AcademicPeriodData[] = res.data.map((periods) => ({ value: periods.id.toString(), label: periods.name }))
+        setListAcademicPeriods(periods);
     };
 
     const handleSubmit = async (formTemplate: TemplateModel) => {
         setLoading(true)
+
+        let periodsId: number;
+
+        if (typeof formTemplate.period === "string") {
+            periodsId = parseInt(formTemplate.period, 10);
+        } else if (typeof formTemplate.period === "number") {
+            periodsId = formTemplate.period;
+        } else {
+            periodsId = formTemplate.period?.id || 0;
+        }
+
+        const templateModel: TemplateModel = {
+            ...formTemplate,
+            period: periodsId,
+        };
+
         if (idRef.current !== 0) {
-            const res = await editTemplateService(idRef.current, formTemplate);
+
+            const res = await editTemplateService(idRef.current, templateModel);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
         } else {
-            const res = await saveTemplateService(formTemplate)
+            const res = await saveTemplateService(templateModel);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
         }

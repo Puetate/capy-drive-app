@@ -1,13 +1,15 @@
 "use client";
 import NextNavLink from "@/components/next-nav-link";
 import { cn } from "@/lib/utils/cn";
-import { IconCardsFilled, IconFolder, IconSchool, IconShield, IconUsers, IconUsersGroup } from "@tabler/icons-react";
+import { IconBuildingBank, IconBuildingSkyscraper, IconCardsFilled, IconFolder, IconSchool, IconShield, IconUsers, IconUsersGroup } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
- const links = [
+const links = [
   { label: "Usuarios", href: "/admin/users", icon: IconUsers },
   { label: "Roles", href: "/admin/roles", icon: IconShield },
+  { label: "Campus", href: "/admin/campus", icon: IconBuildingBank },
+  { label: "Facultades", href: "/admin/faculties", icon: IconBuildingSkyscraper },
   { label: "Plantillas/Carpetas", href: "/admin/templates", icon: IconFolder },
   { label: "Periodos Académicos", href: "/admin/periods", icon: IconSchool },
   { label: "Estudiantes", href: "/admin/students", icon: IconUsersGroup },
