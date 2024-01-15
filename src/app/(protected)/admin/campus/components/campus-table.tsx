@@ -62,6 +62,7 @@ export default function TableCampus() {
         if (res.message === null) { toast.error("No se pudo eliminar el Campus"); return };
         toast.success(res.message);
         await getCampus();
+        closeDialog();
     }
 
     const generalFilter = (value: string) => {

@@ -1,6 +1,6 @@
 export interface AcademicPeriod {
     id: number,
     name: string,
-    dateStart: string,
-    dateEnd: string
+    startDate: Date,
+    endDate: Date
 }

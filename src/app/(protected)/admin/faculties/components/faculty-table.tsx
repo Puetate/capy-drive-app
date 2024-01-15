@@ -86,6 +86,7 @@ export default function TableFaculty() {
         if (res.message === null) { toast.error("No se pudo eliminar la Facultad"); return };
         toast.success(res.message);
         await getFaculty();
+        closeDialog();
     }
 
     const generalFilter = (value: string) => {

@@ -41,6 +41,7 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
             initialValues,
         validate: yupResolver(validationSchema)
     });
+    
     const getCampus = async () => {
         const res = await getCampusService();
         if (res.data === null) return;
