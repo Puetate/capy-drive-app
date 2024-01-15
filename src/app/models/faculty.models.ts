@@ -3,7 +3,7 @@ import { Campus } from "./campus.model";
 
 
 export interface Faculty {
-	id: number,
+	id: number | string,
 	name: string,
 	campus: Campus | number | string,
 }

@@ -1,3 +1,4 @@
+import { Career } from "./career.model";
 import { Role } from "./role.model";
 
 export enum Roles {
@@ -24,5 +25,7 @@ export interface User {
 	// status: boolean,
 	roles: Role[] | string[],
 	role?: string,
-	password?:string
+	password?: string,
+	careers: Career[]| string[],
+	career?: string,
 }

@@ -2,7 +2,8 @@ import { AcademicPeriod } from "./academicPeriod.model";
 
 export interface TemplateModel {
     id:number,
-    templateName: string,
+    name: string,
+    createdAt?:string,
     folders: string[],
     period: AcademicPeriod | string | number
 }
