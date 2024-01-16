@@ -3,27 +3,28 @@ import * as Yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { useForm, yupResolver } from "@mantine/form";
 import { toast } from "sonner";
-import { TemplateModel } from "@/app/models/templateModel.model";
+import { Folders, TemplateModel } from "@/app/models/templateModel.model";
 import saveTemplateService from "../services/saveTemplate.service";
 import editTemplateService from "../services/editTemplate.service";
 import { getPeriodsService } from "../../periods/services/getPeriods.service";
-
-interface AcademicPeriodData {
-    value: string;
-    label: string;
-}
+import { DataSelect } from "../../users/components/form-user";
+import { getCareersService } from "../../careers/services/getCareers.service";
+import { Faculty } from "@/app/models/faculty.models";
+import { getPeriodsByCareerService } from "../../periods/services/getPeriodsByCareer.service";
 
 const initialValues: TemplateModel = {
     id: 0,
     name: "",
     folders: [],
-    period: 0,
+    academicPeriod: "",
+    career: ""
 }
 
 const validationSchema = Yup.object<TemplateModel>().shape({
     name: Yup.string().required("El nombre de la plantilla es obligatorio"),
-    period: Yup.number().required("El periodo académico es obligatorio"),
+    academicPeriod: Yup.string().required("El periodo académico es obligatorio"),
     folders: Yup.array().required("Las carpetas son obligatorias").min(1, "Debe ingresar al menos una carpeta"),
+    career: Yup.string().required("La carrera es obligatoria"),
 });
 
 export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTemplate }:
@@ -32,8 +33,10 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
         onCancel: () => void,
         selectedTemplate: TemplateModel | null
     }) {
-    const [listAcademicPeriods, setListAcademicPeriods] = useState<AcademicPeriodData[]>([]);
     const [loading, setLoading] = useState(false);
+    const [listAcademicPeriods, setListAcademicPeriods] = useState<DataSelect[]>([]);
+    const [listCareers, setListCareers] = useState<DataSelect[]>([]);
+    const [valueCareer, setValueCareer] = useState<string | null>('');
     const idRef = useRef<number>(selectedTemplate?.id || 0);
 
     const form = useForm({
@@ -43,38 +46,33 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
         validate: yupResolver(validationSchema)
     });
 
-    const getAcademicPeriods = async () => {
-        const res = await getPeriodsService();
+    const getAcademicPeriods = async (careerID: string) => {
+        const res = await getPeriodsByCareerService(careerID);
         if (res.data === null) return;
-        const periods: AcademicPeriodData[] = res.data.map((periods) => ({ value: periods.id.toString(), label: periods.name }))
+        const periods: DataSelect[] = res.data.academicPeriods.map((periods) => ({ value: periods.id.toString(), label: periods.name }))
         setListAcademicPeriods(periods);
+    };
+
+    const getCareers = async () => {
+        const res = await getCareersService();
+        if (res.data === null) return;
+        const careers: DataSelect[] = res.data.map((career) => ({ value: career.id.toString(), label: `${(career.faculty as Faculty).name} - ${career.name}` }))
+        setListCareers(careers);
+
     };
 
     const handleSubmit = async (formTemplate: TemplateModel) => {
         setLoading(true)
-
-        let periodsId: number;
-
-        if (typeof formTemplate.period === "string") {
-            periodsId = parseInt(formTemplate.period, 10);
-        } else if (typeof formTemplate.period === "number") {
-            periodsId = formTemplate.period;
-        } else {
-            periodsId = formTemplate.period?.id || 0;
-        }
-
-        const templateModel: TemplateModel = {
-            ...formTemplate,
-            period: periodsId,
-        };
+        const { folders: foldersName } = formTemplate;
+        const folders: Folders[] = (foldersName as string[]).map((folderName) => ({ name: folderName }))
+        const template: TemplateModel = { ...formTemplate, folders }
 
         if (idRef.current !== 0) {
-
-            const res = await editTemplateService(idRef.current, templateModel);
+            const res = await editTemplateService(idRef.current, template);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
         } else {
-            const res = await saveTemplateService(templateModel);
+            const res = await saveTemplateService(template);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);
         }
@@ -83,9 +81,27 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
         onCancel();
     }
 
+    const onChangeSelect = (selectedOption: DataSelect) => {
+        if (selectedOption === null) {
+            setListAcademicPeriods([]);
+            return;
+        }
+
+        setValueCareer(selectedOption.value.toString());
+        getAcademicPeriods(selectedOption.value);
+    }
+
     useEffect(() => {
-        getAcademicPeriods();
+        getCareers();
     }, []);
+
+    useEffect(() => {
+        if (valueCareer) {
+            getAcademicPeriods(valueCareer);
+        } else {
+            setListAcademicPeriods([])
+        }
+    }, [valueCareer]);
 
 
     return (
@@ -104,12 +120,27 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
 
                     <Select
                         comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
-
+                        className="text-black"
                         withAsterisk
+                        label="Carrera"
+                        placeholder="Seleccione"
+                        data={listCareers}
+                        {...form.getInputProps("career")}
+                        onChange={(e) => {
+                            setValueCareer(e)
+                            if (form.getInputProps("career").onChange)
+                                form.getInputProps("career").onChange(e)
+                        }
+                        }
+                    />
+                    <Select
+                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
+                        withAsterisk
+                        disabled={(listAcademicPeriods.length === 0) ? true : false}
                         label="Periodo Académico"
                         placeholder="Seleccione"
                         data={listAcademicPeriods}
-                        {...form.getInputProps("period")}
+                        {...form.getInputProps("academicPeriod")}
                     />
 
                     <TagsInput

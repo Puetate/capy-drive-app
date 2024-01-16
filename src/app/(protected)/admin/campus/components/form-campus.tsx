@@ -37,7 +37,6 @@ export default function FormCampus({ onSubmitSuccess, onCancel, selectedCampus }
         setLoading(true)
         const Campus: Campus = { ...formCampus};
         if (idRef.current !== 0) {
-            console.log(Campus);
             const res = await editCampusService(idRef.current.toString(), Campus);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);

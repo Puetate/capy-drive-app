@@ -30,8 +30,8 @@ export default function TableStudent() {
     const [labelCareer, setLabelCareer] = useState<string>('');
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
 
-    const getStudents = async () => {
-        const res = await getStudentsService(valueCareer!);
+    const getStudents = async (careerID: string) => {
+        const res = await getStudentsService(careerID!);
         if (res.data === null) return
         const users: Student[] = res.data.map(user => ({
             ...user,
@@ -56,7 +56,9 @@ export default function TableStudent() {
 
     const onSubmitSuccess = async () => {
         close()
-        await getStudents()
+        if (valueCareer) {
+            await getStudents(valueCareer);
+        }
     };
 
     const onClickAddButton = () => {
@@ -75,7 +77,7 @@ export default function TableStudent() {
         const res = await deleteStudentService(id);
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
          toast.success(res.message);*/
-        await getStudents();
+        await getStudents(valueCareer);
     }
 
     const generalFilter = (value: string) => {
@@ -93,17 +95,20 @@ export default function TableStudent() {
     }
 
     const onChangeSelect = (selectedOption: DataSelect) => {
+        console.log(selectedOption);
+
         if (selectedOption === null) {
             setListStudents([]);
             listStudentsRef.current = [];
             return;
         }
-        setValueCareer(selectedOption.value);
+        console.log(selectedOption);
+
+        setValueCareer(selectedOption.value.toString());
         setLabelCareer(selectedOption.label);
-
-        getStudents();
+        getStudents(selectedOption.value.toString());
     }
-
+    
     useEffect(() => {
         getCareers();
     }, []);

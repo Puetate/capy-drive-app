@@ -23,7 +23,7 @@ import { Faculty } from "@/app/models/faculty.models";
 ] */
 function getFormatDate(fechaCompleta: string): string {
     const fecha = new Date(fechaCompleta);
-    
+
     const año = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const dia = String(fecha.getDate()).padStart(2, '0');
@@ -38,19 +38,19 @@ export default function TemplatePage() {
     const [opened, { open, close }] = useDisclosure();
     const [selectedTemplate, setSelectedTemplate] = useState<TemplateModel | null>(null)
     const [valueCareer, setValueCareer] = useState<string>('');
-    const [labelCareer, setLabelCareer] = useState<string>('');
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
     const [listTemplates, setListTemplates] = useState<TemplateModel[]>([]);
     const listTemplatesRef = useRef<TemplateModel[]>([]);
 
-    const getTemplates = async (id:string) => {
+    const getTemplates = async (id: string) => {
         const res = await getTemplatesService(id);
         if (res.data === null) return
+        console.log(res.data);
+
         const templates: TemplateModel[] = res.data.map(template => ({
             ...template,
             createdAt: getFormatDate(template.createdAt!),
-            folders: ["folder 1", "folder 2", "folder 2"],
-            period: { name: "Ener 30 ", endDate: new Date(), startDate: new Date(), id: 1 }
+            academicPeriod: { name: "Ener 30 ", endDate: new Date(), startDate: new Date(), id: 1 }
         }));
         setListTemplates(templates);
         listTemplatesRef.current = templates;
@@ -71,13 +71,16 @@ export default function TemplatePage() {
 
     const onSubmitSuccess = async () => {
         close()
-        // await getUsers()
+        if (valueCareer) {
+            getTemplates(valueCareer);
+        }
     };
 
     const onClickEditButton = (template: TemplateModel) => {
-        const { id: periodID } = template.period as AcademicPeriod;
-        setSelectedTemplate({ ...template, period: periodID.toString() });
-        console.log(selectedTemplate);
+        console.log(template);
+        
+        const { id: periodID } = template.academicPeriod as AcademicPeriod;
+        setSelectedTemplate({ ...template, academicPeriod: periodID.toString() });
         open()
     }
 
@@ -95,11 +98,11 @@ export default function TemplatePage() {
         if (value == "") {
             return setListTemplates(listTemplatesRef.current);
         }
-         const filteredList = listTemplatesRef.current.filter(
-            ({ name, period }: TemplateModel) => {
+        const filteredList = listTemplatesRef.current.filter(
+            ({ name, academicPeriod: period }: TemplateModel) => {
                 const filter = `${name} ${period}`;
                 return filter.toLowerCase().includes(value.trim().toLowerCase());
-    
+
             },
         );
         return setListTemplates(filteredList);
@@ -107,7 +110,7 @@ export default function TemplatePage() {
 
     useEffect(() => {
         getCareers();
-    }, [valueCareer]);
+    }, []);
 
     return (
         <Flex direction="column" h="100%" gap=".15rem">

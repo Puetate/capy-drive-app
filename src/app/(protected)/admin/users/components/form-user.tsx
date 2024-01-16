@@ -83,10 +83,8 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
         const roles = formUser.roles.map((role) => ({ id: parseInt(role.toString()), name: "" } as Role));
         const careers = formUser.careers.map((career) => ({ id: parseInt(career.toString()), name: "" } as Career));
         const user: User = { ...formUser, roles, careers };
-        console.log(user);
 
         if (idRef.current !== 0) {
-            console.log(user);
             const res = await editUserService(idRef.current, user);
             if (res.message === null) return setLoading(false)
             toast.success(res.message);

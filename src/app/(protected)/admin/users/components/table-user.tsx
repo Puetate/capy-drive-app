@@ -33,8 +33,6 @@ export default function TableUser() {
 
     const getUsers = async () => {
         const res = await getUsersService();
-        console.log(res.data);
-
         if (res.data === null) return
         const users: User[] = res.data.map(user => ({
             ...user,
@@ -136,7 +134,7 @@ export default function TableUser() {
                                 <IconEdit />
                             </ActionIcon>
                         </Tooltip>
-                        {/* <Tooltip label="Eliminar">
+                        <Tooltip label="Eliminar">
                             <ActionIcon
                                 color="red"
                                 variant="light"
@@ -144,7 +142,7 @@ export default function TableUser() {
                             >
                                 <IconTrash />
                             </ActionIcon>
-                        </Tooltip> */}
+                        </Tooltip>
                     </Group>
                 ),
                 textAlignment: "center"
