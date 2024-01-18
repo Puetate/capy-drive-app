@@ -1,9 +1,9 @@
 import { ResponseRequest } from "@/app/models/responseRequest.model";
-import { TemplateModel } from "@/app/models/templateModel.model";
+import { Student } from "@/app/models/student.model";
 import API from "@/lib/axios/api";
 
-export default async function editStudentService(id:number, template: TemplateModel) {
-    const url = `/template/${id}`;
-    const res = await API.put<ResponseRequest<TemplateModel>>({ url: url, data: template })
+export default async function editStudentService(id:number, student: Student) {
+    const url = `/students/${id}`;
+    const res = await API.put<ResponseRequest<Student>>({ url: url, data: student })
     return res
 }

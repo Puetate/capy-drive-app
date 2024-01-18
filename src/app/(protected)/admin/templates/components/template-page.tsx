@@ -50,7 +50,6 @@ export default function TemplatePage() {
         const templates: TemplateModel[] = res.data.map(template => ({
             ...template,
             createdAt: getFormatDate(template.createdAt!),
-            academicPeriod: { name: "Ener 30 ", endDate: new Date(), startDate: new Date(), id: 1 }
         }));
         setListTemplates(templates);
         listTemplatesRef.current = templates;

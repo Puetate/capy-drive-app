@@ -30,13 +30,13 @@ export default function TableStudent() {
     const [labelCareer, setLabelCareer] = useState<string>('');
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
 
-    const getStudents = async (careerID: string) => {
+    const getStudents = async (careerID: string, career:string) => {
         const res = await getStudentsService(careerID!);
         if (res.data === null) return
         const users: Student[] = res.data.map(user => ({
             ...user,
             fullName: `${user.names} ${user.surnames}`,
-            career: labelCareer
+            career: career
         }));
         setListStudents(users);
         listStudentsRef.current = users;
@@ -50,14 +50,15 @@ export default function TableStudent() {
 
     };
 
-    const onClickEditButton = (user: Student) => {
+    const onClickEditButton = (student: Student) => {
+        setSelectedStudent(student);
         open()
-    }
+    } 
 
     const onSubmitSuccess = async () => {
         close()
         if (valueCareer) {
-            await getStudents(valueCareer);
+            await getStudents(valueCareer, labelCareer);
         }
     };
 
@@ -66,8 +67,8 @@ export default function TableStudent() {
         openExcel()
     }
 
-    const onClickDeleteButton = async (user: Student) => {
-        setSelectedStudent(user)
+    const onClickDeleteButton = async (student: Student) => {
+        setSelectedStudent(student)
         openDialog()
     }
 
@@ -77,7 +78,7 @@ export default function TableStudent() {
         const res = await deleteStudentService(id);
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
          toast.success(res.message);*/
-        await getStudents(valueCareer);
+        await getStudents(valueCareer, labelCareer); 
     }
 
     const generalFilter = (value: string) => {
@@ -106,7 +107,8 @@ export default function TableStudent() {
 
         setValueCareer(selectedOption.value.toString());
         setLabelCareer(selectedOption.label);
-        getStudents(selectedOption.value.toString());
+        const {label, value} = selectedOption;
+        getStudents(value, label);
     }
     
     useEffect(() => {

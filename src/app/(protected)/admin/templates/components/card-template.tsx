@@ -25,7 +25,11 @@ export default function CardTemplate({ templates, onEditTemplate }: { templates:
                                 <IconPencil color='black' stroke={1.5} />
                             </ActionIcon> */}
                         </Group>
-                        <Text className='ml-3 mb-3 text-sm'>Periodo: <span className='font-light'>{(item.academicPeriod as AcademicPeriod).name}</span></Text>
+                        <Text className='ml-3 mb-3 text-sm'>Periodo: 
+                            <Each of={(item.academicPeriods!)} render={(item, indexPeriod) => <span className='font-light'>{`${item.name}`}</span>
+                            }>
+                            </Each>
+                        </Text>
                     </Card.Section>
 
                     <div className='flex flex-col justify-between h-full'>

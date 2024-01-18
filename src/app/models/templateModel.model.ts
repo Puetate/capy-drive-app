@@ -8,5 +8,7 @@ export interface TemplateModel {
     createdAt?: string,
     folders: string[] | Folders[],
     academicPeriod: AcademicPeriod | string | number,
-    career?: string | number
+    career?: string | number,
+    academicPeriods?: AcademicPeriod[],
+    
 }
