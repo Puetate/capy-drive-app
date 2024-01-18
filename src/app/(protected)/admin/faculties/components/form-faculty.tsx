@@ -33,7 +33,7 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
     }) {
     const [listCampus, setListCampus] = useState<CampusData[]>([]);
     const [loading, setLoading] = useState(false);
-    const idRef = useRef<number>(selectedFaculty?.id || 0);
+    const idRef = useRef<number>(selectedFaculty?.id as number || 0);
 
     const form = useForm({
         initialValues: idRef.current && selectedFaculty !== null ?

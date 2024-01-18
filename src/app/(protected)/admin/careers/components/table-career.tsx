@@ -15,6 +15,9 @@ import { getCareersService } from "../services/getCareers.service";
 import { deleteCareerService } from "../services/deleteCareer.service";
 import { Faculty } from "@/app/models/faculty.models";
 import FormCareerAcadPeriod from "./form-career-acad-period";
+import { DataSelect } from "../../users/components/form-user";
+import { AcademicPeriod } from "@/app/models/academicPeriod.model";
+import { getCareersAcadPeriodService } from "../services/getCareersAcadPeriod.service";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar la carrera ${name}?`)
 
@@ -28,11 +31,12 @@ export default function TableCareer() {
     const listCareersRef = useRef<Career[]>([]);
 
     const getCareers = async () => {
-        const res = await getCareersService();
+        const res = await getCareersAcadPeriodService();
 
         if (res.data === null) return
         const careers: Career[] = res.data.map(career => ({
             ...career,
+            academicPeriods: (career.academicPeriods === null) ? [] as AcademicPeriod[] : career.academicPeriods 
         }));
         setListCareers(careers);
         listCareersRef.current = careers;
@@ -51,8 +55,10 @@ export default function TableCareer() {
     };
 
     const onClickEditAcademicPeriodsButton = async (career: Career) => {
-        const nameFaculty = (career.faculty as Faculty).name;
-        setSelectedCareer({ ...career, faculty: nameFaculty })
+        const { faculty, academicPeriods: periods } = career;
+        const nameFaculty = (faculty as Faculty).name;
+        const academicPeriods: string[] = (periods as AcademicPeriod[]).map((period) => (period.id.toString()));
+        setSelectedCareer({ ...career, faculty: nameFaculty, academicPeriods })
         openModalPeriod()
     }
 
@@ -98,7 +104,17 @@ export default function TableCareer() {
         () => [
             { accessor: "name", title: "Carrera" },
             { accessor: "faculty.name", title: "Facultad" },
-            { accessor: "faculty.name", title: "Periodos Académicos" },
+            {
+                accessor: "academicPeriods",
+                title: "Periodos Académicos",
+                render: (career) => (
+                    (career.academicPeriods?.length! < 1) ? <p>Asignar Periodo Académico</p> :
+                        <Group className="">
+                            <Each of={((career.academicPeriods! as AcademicPeriod[]))} render={(item, index) =>
+                                <Badge key={index} radius="md" size="lg" color="orange" >{`${item.name}`} </Badge>
+                            }></Each>
+                        </Group>)
+            },
             {
                 titleClassName: "text-center",
                 accessor: "actions",
@@ -153,7 +169,7 @@ export default function TableCareer() {
                 <FormCareer onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedCareer={selectedCareer} />
             </Modal>
             <Modal opened={openedModalPeriod} onClose={closeModalPeriod} withCloseButton={false} >
-                <FormCareerAcadPeriod onCancel={close} onSubmitSuccess={onSubmitSuccess} selectedCareer={selectedCareer} />
+                <FormCareerAcadPeriod onCancel={closeModalPeriod} onSubmitSuccess={onSubmitSuccess} selectedCareer={selectedCareer} />
             </Modal>
             <ConfirmDialog opened={openedDialog} onClose={closeDialog} message={(selectedCareer) ? getConfirmMessage(selectedCareer.name) : ""} onConfirm={handleDeleteCareer} />
         </Flex>

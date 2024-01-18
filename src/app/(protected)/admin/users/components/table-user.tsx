@@ -14,7 +14,7 @@ import { deleteUserService } from "../services/deleteUser.service";
 import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
-import { encriptar } from "./aes";
+import { encriptar } from "../../../../../lib/utils/aes";
 import { Career } from "@/app/models/career.model";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
@@ -57,7 +57,6 @@ export default function TableUser() {
     };
 
     const onClickAddButton = () => {
-        encriptar();
         setSelectedUser(null);
         open()
     }

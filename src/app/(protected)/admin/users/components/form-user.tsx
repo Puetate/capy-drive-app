@@ -16,6 +16,7 @@ import { Career } from "@/app/models/career.model";
 export interface DataSelect {
     value: string;
     label: string;
+    disabled?: boolean
 }
 
 const initialValues: User = {

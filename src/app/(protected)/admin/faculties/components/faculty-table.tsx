@@ -35,7 +35,7 @@ export default function TableFaculty() {
         } else {
             return "";
         }
-        };
+    };
 
 
     const getFaculty = async () => {
@@ -50,18 +50,18 @@ export default function TableFaculty() {
     };
 
     const onClickEditButton = (faculty: Faculty) => {
-    let campusID: string;
+        var campusID: string = "";
 
-    if (faculty.campus) {
-        if (Array.isArray(faculty.campus)) {
-            campusID = faculty.campus.map((campus) => (campus as Campus).id.toString()).join(", ");
-        } else if (typeof faculty.campus === "object" && "id" in faculty.campus) {
-            campusID = (faculty.campus as Campus).id.toString();
+        if (faculty.campus) {
+            if (Array.isArray(faculty.campus)) {
+                campusID = faculty.campus.map((campus) => (campus as Campus).id.toString()).join(", ");
+            } else if (typeof faculty.campus === "object" && "id" in faculty.campus) {
+                campusID = (faculty.campus as Campus).id.toString();
+            }
         }
-    }
-    setSelectedFaculty({ ...faculty, campus: campusID });
-    open();
-};
+        setSelectedFaculty({ ...faculty, campus: campusID });
+        open();
+    };
 
 
     const onSubmitSuccess = async () => {
@@ -82,7 +82,7 @@ export default function TableFaculty() {
     const handleDeleteFaculty = async () => {
         const { id } = selectedFaculty!;
         if (!id) return;
-        const res = await deleteFacultyService(id);
+        const res = await deleteFacultyService(id as number);
         if (res.message === null) { toast.error("No se pudo eliminar la Facultad"); return };
         toast.success(res.message);
         await getFaculty();
@@ -112,7 +112,8 @@ export default function TableFaculty() {
         () => [
             { accessor: "name", title: "Nombre" },
             {
-                accessor: "campus.name", title: "Campus" },
+                accessor: "campus.name", title: "Campus"
+            },
             {
                 titleClassName: "text-center",
                 accessor: "actions",
