@@ -1,4 +1,5 @@
 import axios from "./config/axios.config";
+import { AxiosRequestConfig } from "axios";
 
 const API = {
   get,
@@ -16,13 +17,9 @@ export interface RequestParams {
   headers?: object;
 }
 
-function get<T>(params: RequestParams): Promise<T> {
+function get<T>(params: AxiosRequestConfig): Promise<T> {
   return axios<T>({
-    url: params.url,
-    method: "GET",
-    params: params.params,
-    data: params.data,
-    headers: params.headers
+    ...params
   }).then((res) => res.data);
 }
 

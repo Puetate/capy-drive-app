@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Text className="hidden text-xl font-bold uppercase md:block">{title}</Text>
           </div>
           <div className="flex items-center justify-center gap-3">
-            <Text>{`${session?.user.name}`}</Text>
+            <Text>{`${session?.user.currentRole.name} - ${session?.user.names} ${session?.user.surnames}`}</Text>
             <ConfigMenu />
           </div>
         </Group>
@@ -46,7 +46,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             color={opened ? "black" : "white"}
           />
           <img
-            src="logo-uta.webp"
+            src="/logo-uta.webp"
             className="mx-auto h-[128px] w-[100px]"
             height="128px"
             width="100px"

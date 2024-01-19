@@ -1,10 +1,17 @@
+import { Career } from "@/app/models/career.model";
+import { Role } from "@/app/models/role.model";
 import "next-auth";
 
 export interface User {
-  id: string;
-  name: string;
+  id: number;
+  names: string;
+  surnames: string;
+  phone: string;
+  dni: string;
   email: string;
-  image: null;
+  roles: Role[];
+  currentRole: Role;
+  careers: Career[];
 }
 
 declare module "next-auth" {

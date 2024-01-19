@@ -1,11 +1,13 @@
 import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import { defaultRoutes, routes } from "./app/models/route.model";
 
 export default withAuth(
   function middleware(req: NextRequestWithAuth) {
     const session = req.nextauth.token;
     if (session && req.nextUrl.pathname === "/login") {
-      return NextResponse.redirect(new URL("/admin", req.url));
+      const currentRole = session.user.currentRole;
+      return NextResponse.redirect(new URL(defaultRoutes[currentRole?.name], req.url));
     }
     return NextResponse.next();
   },
@@ -14,10 +16,10 @@ export default withAuth(
       authorized: ({ req, token }) => {
         if (req.nextUrl.pathname === "/login") return true;
         if (!token) return false;
-        // const roles = token?.roles.map((rol) => rol.roleName.toUpperCase());
-        // const currentPathRole = req.nextUrl.pathname.split("/")[1].toLocaleUpperCase();
-        // const isRolMatch = roles?.includes(currentPathRole);
-        return true;
+        const currentRole = token.user.currentRole.name;
+        const acceptedPaths = routes[currentRole];
+        const isRolMatch = acceptedPaths.includes(req.nextUrl.pathname);
+        return isRolMatch;
       }
     }
   }

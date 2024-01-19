@@ -6,12 +6,13 @@ import { useForm, yupResolver } from "@mantine/form";
 import { User } from "@/app/models/user.model";
 import { editUserService } from "../services/editUser.service";
 import { saveUserService } from "../services/saveUser.service";
-import { toast } from "sonner";
-import { getRolesService } from "../../roles/services/getRoles.service";
 import { Role } from "@/app/models/role.model";
 import { getCareersService } from "../../careers/services/getCareers.service";
 import { Faculty } from "@/app/models/faculty.models";
 import { Career } from "@/app/models/career.model";
+import { getUserRolesService } from "../services/getUserRoles.service";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export interface DataSelect {
     value: string;
@@ -54,6 +55,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
     const [loading, setLoading] = useState(false);
     const idRef = useRef<number>(selectedUser?.id || 0);
+    const { data: session } = useSession();
 
     const form = useForm({
         initialValues: idRef.current && selectedUser !== null ?
@@ -63,11 +65,10 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     });
 
     const getRoles = async () => {
-        const res = await getRolesService();
+        const res = await getUserRolesService(session?.user!.id!.toString()!);
         if (res.data === null) return;
         const roles: DataSelect[] = res.data.map((rol) => ({ value: rol.id.toString(), label: rol.name }))
         setListRoles(roles);
-
     };
 
     const getCareers = async () => {
@@ -75,7 +76,6 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
         if (res.data === null) return;
         const careers: DataSelect[] = res.data.map((career) => ({ value: career.id.toString(), label: `${(career.faculty as Faculty).name} - ${career.name}` }))
         setListCareers(careers);
-
     };
 
 

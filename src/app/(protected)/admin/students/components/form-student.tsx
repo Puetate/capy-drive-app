@@ -1,16 +1,10 @@
 "use client"
-import { Button, Flex, Group, MultiSelect, PasswordInput, Select, Text, TextInput } from "@mantine/core";
+import { Button, Flex, Text, TextInput } from "@mantine/core";
 import * as Yup from "yup";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, yupResolver } from "@mantine/form";
 import { toast } from "sonner";
-import { getRolesService } from "../../roles/services/getRoles.service";
-import { Role } from "@/app/models/role.model";
-import { getCareersService } from "../../careers/services/getCareers.service";
-import { Faculty } from "@/app/models/faculty.models";
-import { Career } from "@/app/models/career.model";
 import { Student } from "@/app/models/student.model";
-import { DataSelect } from "../../users/components/form-user";
 import editStudentService from "../services/editStudent.service";
 
 const initialValues: Student = {

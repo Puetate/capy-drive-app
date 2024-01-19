@@ -1,21 +1,21 @@
 "use client";
-import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
-import { IconEdit, IconShieldPlus, IconTrash, IconUserPlus } from "@tabler/icons-react";
-import { getUsersService } from "../services/getUsers.service";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { DataTableColumn } from "mantine-datatable";
-import DataTable from "@/components/data-table";
-import { useDisclosure } from "@mantine/hooks";
-import FormUser from "./form-user";
-import Each from "@/lib/utils/each";
-import { Role } from "@/app/models/role.model";
-import { User } from "@/app/models/user.model";
-import { deleteUserService } from "../services/deleteUser.service";
-import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
-import { encriptar } from "../../../../../lib/utils/aes";
 import { Career } from "@/app/models/career.model";
+import { Role } from "@/app/models/role.model";
+import { User } from "@/app/models/user.model";
+import DataTable from "@/components/data-table";
+import Each from "@/lib/utils/each";
+import { ActionIcon, Badge, Button, Flex, Group, Modal, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconEdit, IconTrash, IconUserPlus } from "@tabler/icons-react";
+import { DataTableColumn } from "mantine-datatable";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import { deleteUserService } from "../services/deleteUser.service";
+import { getUsersService } from "../services/getUsers.service";
+import FormUser from "./form-user";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -26,20 +26,22 @@ export default function TableUser() {
     const [openedDialog, { open: openDialog, close: closeDialog }] = useDisclosure()
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const listUsersRef = useRef<User[]>([]);
+    const { data: session } = useSession();
 
 
     const getRolesNames = (userRolesArray: Role[]) => userRolesArray.map((role) => role.name);
     const getCareersNames = (userRolesArray: Career[]) => userRolesArray.map((career) => career.name);
 
     const getUsers = async () => {
-        const res = await getUsersService();
+        if (!session) return;
+        const res = await getUsersService(session?.user.id!.toString());
         if (res.data === null) return
         const users: User[] = res.data.map(user => ({
             ...user,
             role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
             career: getRolesNames(user.careers as Career[]).join(", "),
-        })); 
+        }));
         setListUsers(users);
         listUsersRef.current = users;
     };
@@ -47,7 +49,7 @@ export default function TableUser() {
     const onClickEditButton = (user: User) => {
         const rolesID: string[] = user.roles.map((rol) => (rol as Role).id.toString())
         const careersID: string[] = user.careers.map((career) => (career as Career).id.toString())
-        setSelectedUser({ ...user, roles: rolesID, password: "", careers:careersID });
+        setSelectedUser({ ...user, roles: rolesID, password: "", careers: careersID });
         open()
     }
 
@@ -79,10 +81,10 @@ export default function TableUser() {
     const generalFilter = (value: string) => {
         if (value == "") {
             return setListUsers(listUsersRef.current);
-        } 
+        }
         const filteredList = listUsersRef.current.filter(
             ({ dni, email, fullName, role, career }: User) => {
-                const filter = `${dni} ${email} ${fullName} ${role} ${career}` ;
+                const filter = `${dni} ${email} ${fullName} ${role} ${career}`;
                 return filter.toLowerCase().includes(value.trim().toLowerCase());
             },
         );
@@ -91,7 +93,7 @@ export default function TableUser() {
 
     useEffect(() => {
         getUsers();
-    }, []);
+    }, [session]);
 
     const UsersColumns = useMemo<DataTableColumn<User>[]>(
         () => [

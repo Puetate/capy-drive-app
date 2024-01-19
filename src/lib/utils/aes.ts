@@ -44,9 +44,9 @@ function encrypt(message: string, publicKey: { n: number; e: number }): number[]
     for (let i = 0; i < message.length; i++) {
         const charCode = message.charCodeAt(i);
         console.log("char code", charCode);
-        
+
         const encryptedChar = BigInt(charCode) ** BigInt(publicKey.e) % BigInt(publicKey.n);
-        console.log("encriptado",Number(encryptedChar));
+        console.log("encriptado", Number(encryptedChar));
         encryptedMessage.push(Number(encryptedChar));
     }
 
@@ -66,15 +66,20 @@ function decrypt(encryptedMessage: number[], privateKey: { n: number; d: number 
     return decryptedMessage;
 }
 
-export function encriptar() {
+export function encriptar(value: string) {
 
-    const { publicKey, privateKey } = generateRSAKeys();
-    const message = '0401111018';
-    const encryptedMessage = encrypt(message, publicKey);
-    const decryptedMessage = decrypt(encryptedMessage, privateKey);
+    const { publicKey } = generateRSAKeys();
+    const encryptedMessage = encrypt(value, publicKey).join(",");
+    console.log(encryptedMessage);
+    return encryptedMessage
 
-    console.log('Mensaje original:', message);
-    console.log('Mensaje encriptado:', encryptedMessage);
-    console.log('Mensaje desencriptado:', decryptedMessage);
 }
+
+/* export function desEncriptar(valueEncrypt: string) {
+
+    const { privateKey } = generateRSAKeys();
+    const decryptedMessage = decrypt(valueEncrypt, privateKey);
+
+    console.log('Mensaje desemcroiptado:', encryptedMessage);
+} */
 // Ejemplo de uso
