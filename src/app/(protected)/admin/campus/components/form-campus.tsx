@@ -57,11 +57,11 @@ export default function FormCampus({ onSubmitSuccess, onCancel, selectedCampus }
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Usuario" : "Crear Usuario"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Campus" : "Crear Campus"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput
-                        maxLength={100}
+                        maxLength={25}
                         withAsterisk
                         
                         label="Campus"

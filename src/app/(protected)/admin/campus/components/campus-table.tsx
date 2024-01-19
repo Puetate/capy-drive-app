@@ -12,6 +12,7 @@ import FormCampus from "./form-campus";
 import { Campus } from "@/app/models/campus.model";
 import { deleteCampusService } from "../../campus/services/deleteCampus.service";
 import { toast } from "sonner";
+import { IconBuildingBank } from "@tabler/icons-react";
 
 const getConfirmMessage = (name: string): string => `¿Seguro que desea eliminar el Campus ${name}?`;
 
@@ -124,7 +125,7 @@ export default function TableCampus() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Campus</> <IconShieldPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Campus</> <IconBuildingBank /> </Group></Button>
             </Group>
             <DataTable columns={CampusColumns} records={listCampus}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >

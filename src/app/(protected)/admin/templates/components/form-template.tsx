@@ -107,7 +107,7 @@ export default function FormTemplate({ onSubmitSuccess, onCancel, selectedTempla
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Plantilla" : "Crear Plantilla"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Plantilla" : "Crear Plantilla"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput

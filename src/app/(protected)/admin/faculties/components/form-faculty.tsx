@@ -91,11 +91,12 @@ export default function FormFaculty({ onSubmitSuccess, onCancel, selectedFaculty
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Facultad" : "Crear Facultad"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Facultad" : "Crear Facultad"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput
                         withAsterisk
+                        maxLength={60}
                         label="Nombres"
                         {...form.getInputProps("name")}
                     />

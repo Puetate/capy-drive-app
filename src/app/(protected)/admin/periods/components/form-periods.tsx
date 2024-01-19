@@ -87,11 +87,11 @@ export default function FormAcademicPeriod({ onSubmitSuccess, onCancel, selected
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Período Académico" : "Crear Período Académico"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Período Académico" : "Crear Período Académico"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput
-                        maxLength={100}
+                        maxLength={60}
                         withAsterisk
                         label="Período Académico"
                         {...form.getInputProps("name")}
