@@ -108,7 +108,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Usuario" : "Crear Usuario"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Usuario" : "Crear Usuario"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput
@@ -124,11 +124,13 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
 
                         <TextInput
                             withAsterisk
+                            maxLength={30}
                             label="Nombres"
                             {...form.getInputProps("names")}
                         />
                         <TextInput
                             withAsterisk
+                            maxLength={30}
                             label="Apellidos"
                             {...form.getInputProps("surnames")}
                         />
@@ -143,6 +145,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
                     <TextInput
                         withAsterisk
                         label="Teléfono"
+                        maxLength={10}
                         {...form.getInputProps("phone")}
                     />
 

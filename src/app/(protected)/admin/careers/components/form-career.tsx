@@ -73,12 +73,13 @@ export default function FormCareer({ onSubmitSuccess, onCancel, selectedCareer }
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Carrera" : "Crear Carrera"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Carrera" : "Crear Carrera"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
 
                     <TextInput
                         withAsterisk
+                        maxLength={50}
                         label="Nombre de Carrera"
                         {...form.getInputProps("name")}
                     />

@@ -6,7 +6,7 @@ import InputsFilters from "@/app/(protected)/components/InputsFilters";
 import DataTable from "@/components/data-table";
 import { ActionIcon, Button, Container, Flex, Group, Modal, TextInput, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconEdit, IconShieldPlus, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconSchool, IconShieldPlus, IconTrash } from "@tabler/icons-react";
 import { DataTableColumn } from "mantine-datatable";
 import { toast } from "sonner";
 import { AcademicPeriod } from "@/app/models/academicPeriod.model";
@@ -58,7 +58,7 @@ export default function TableCampus() {
         const { id } = selectedAcademicPeriod!;
         if (!id) return;
         const res = await deletePeriodsService(id);
-        if (res.message === null) { toast.error("No se pudo eliminar el AcademicPeriod"); return };
+        if (res.message === null) { toast.error("No se pudo eliminar el Periodo Académico"); return };
         toast.success(res.message);
         await getAcademicPeriod();
         closeDialog();
@@ -85,7 +85,7 @@ export default function TableCampus() {
 
     const CampusColumns = useMemo<DataTableColumn<AcademicPeriod>[]>(
         () => [
-            { accessor: "name", title: "AcademicPeriod" },
+            { accessor: "name", title: "Periodo Académico" },
             { accessor: "startDate", title: "Fecha Inicio" },
             { accessor: "endDate", title: "Fecha Fin" },
             {
@@ -117,7 +117,7 @@ export default function TableCampus() {
 
             <Group className="mb-3" gap="xl">
                 <InputsFilters onChangeFilters={generalFilter} />
-                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Período Académico</> <IconShieldPlus /> </Group></Button>
+                <Button size="sm" onClick={onClickAddButton} > <Group><>Crear Período Académico</> <IconSchool /> </Group></Button>
             </Group>
             <DataTable columns={CampusColumns} records={listAcademicPeriod}></DataTable>
             <Modal opened={opened} onClose={close} withCloseButton={false} >
