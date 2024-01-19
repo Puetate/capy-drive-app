@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import * as Yup from "yup";
 import { getPeriodsWithoutMineService } from "../../periods/services/getPeriodsWithoutMine.service";
 import { DataSelect } from "../../users/components/form-user";
-import { saveCareerAcadPeriodService } from "../services/saveCareerAcadPeriod.service";
+import { saveCareerAcadPeriodService } from "../../careers/services/saveCareerAcadPeriod.service";
 
 const initialValues: Career = {
     id: 0,
