@@ -8,6 +8,10 @@ const nextConfig = {
                 permanent: false,
             }
         ]
+    },
+    webpack: (config) => {
+        config.resolve.alias.canvas = false;
+        return config;
     }
 }
 
