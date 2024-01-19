@@ -5,5 +5,5 @@ export interface Career {
     id: number,
     name: string,
     faculty: Faculty | string,
-    academicPeriods?: AcademicPeriod[] | string[],
+    academicPeriods?: AcademicPeriod[] | string[] | string,
 }

@@ -9,5 +9,5 @@ export interface Student {
     phone: string,
     email: string,
     career: string,
-    academicPeriods?: string[] | AcademicPeriod[]
+    academicPeriods?: string[] | AcademicPeriod[] | string
 }

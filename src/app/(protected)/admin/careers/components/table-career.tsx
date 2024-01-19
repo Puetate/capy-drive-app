@@ -57,7 +57,7 @@ export default function TableCareer() {
     const onClickEditAcademicPeriodsButton = async (career: Career) => {
         const { faculty, academicPeriods: periods } = career;
         const nameFaculty = (faculty as Faculty).name;
-        const academicPeriods: string[] = (periods as AcademicPeriod[]).map((period) => (period.id.toString()));
+        const academicPeriods: string[] = (periods as AcademicPeriod[]).map((period) => (period.name));
         setSelectedCareer({ ...career, faculty: nameFaculty, academicPeriods })
         openModalPeriod()
     }

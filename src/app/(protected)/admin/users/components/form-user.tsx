@@ -1,18 +1,19 @@
 "use client"
-import { Button, Flex, Group, MultiSelect, PasswordInput, Select, Text, TextInput } from "@mantine/core";
-import * as Yup from "yup";
-import { useEffect, useRef, useState } from "react";
-import { useForm, yupResolver } from "@mantine/form";
-import { User } from "@/app/models/user.model";
-import { editUserService } from "../services/editUser.service";
-import { saveUserService } from "../services/saveUser.service";
-import { Role } from "@/app/models/role.model";
-import { getCareersService } from "../../careers/services/getCareers.service";
-import { Faculty } from "@/app/models/faculty.models";
 import { Career } from "@/app/models/career.model";
-import { getUserRolesService } from "../services/getUserRoles.service";
+import { Faculty } from "@/app/models/faculty.models";
+import { Role } from "@/app/models/role.model";
+import { User } from "@/app/models/user.model";
+import { Button, Flex, MultiSelect, Text, TextInput } from "@mantine/core";
+import { useForm, yupResolver } from "@mantine/form";
 import { useSession } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import * as Yup from "yup";
+import { getCareersService } from "../../careers/services/getCareers.service";
+import { editUserService } from "../services/editUser.service";
+import { getUserRolesService } from "../services/getUserRoles.service";
+import { saveUserService } from "../services/saveUser.service";
+import { encriptar } from "@/lib/utils/aes";
 
 export interface DataSelect {
     value: string;
@@ -100,6 +101,7 @@ export default function FormUser({ onSubmitSuccess, onCancel, selectedUser }:
     }
 
     useEffect(() => {
+        encriptar("0401527650");
         getRoles();
         getCareers();
     }, []);

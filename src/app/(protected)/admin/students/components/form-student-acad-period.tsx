@@ -20,7 +20,7 @@ const validationSchema = Yup.object<CareerAcadPeriodReq>().shape({
     academicPeriods: Yup.string().required("El periodo académico es obligatorio")
 });
 
-export default function FormCareerAcadPeriod({ onSubmitSuccess, onCancel, selectedCareer }:
+export default function FormStudentAcadPeriod({ onSubmitSuccess, onCancel, selectedCareer }:
     {
         onSubmitSuccess: () => void,
         onCancel: () => void,

@@ -46,10 +46,8 @@ function encrypt(message: string, publicKey: { n: number; e: number }): number[]
 
     for (let i = 0; i < message.length; i++) {
         const charCode = message.charCodeAt(i);
-        console.log("char code", charCode);
 
         const encryptedChar = BigInt(charCode) ** BigInt(publicKey.e) % BigInt(publicKey.n);
-        console.log("encriptado", Number(encryptedChar));
         encryptedMessage.push(Number(encryptedChar));
     }
 
@@ -72,7 +70,7 @@ export function encriptar(value: string) {
 
     const { publicKey } = generateRSAKeys();
     const encryptedMessage = encrypt(value, publicKey).join(",");
-    // console.log(encryptedMessage);
+    console.log(encryptedMessage);
     return encryptedMessage
 
 }

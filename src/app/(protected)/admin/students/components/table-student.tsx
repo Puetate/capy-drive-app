@@ -16,6 +16,7 @@ import getStudentsService from "../services/getStudents.service";
 import FormStudent from "./form-student";
 import FormUpExcel from "./form-up-excel";
 import { AcademicPeriod } from "@/app/models/academicPeriod.model";
+import { IconSchool } from "@tabler/icons-react";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -29,6 +30,7 @@ export default function TableStudent() {
     const [valueCareer, setValueCareer] = useState<string>('');
     const [labelCareer, setLabelCareer] = useState<string>('');
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
+    const [openedModalPeriod, { open: openModalPeriod, close: closeModalPeriod }] = useDisclosure()
 
     const getStudents = async (careerID: string, career: string) => {
         const res = await getStudentsService(careerID!);
@@ -79,6 +81,13 @@ export default function TableStudent() {
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
          toast.success(res.message);*/
         await getStudents(valueCareer, labelCareer);
+    }
+
+    const onClickEditAcademicPeriodsButton = async (student: Student) => {
+        const { academicPeriods: periods } = student;
+        const academicPeriods: string[] = (periods as AcademicPeriod[]).map((period) => (period.name));
+        setSelectedStudent({ ...student, academicPeriods })
+        openModalPeriod()
     }
 
     const generalFilter = (value: string) => {
@@ -139,6 +148,15 @@ export default function TableStudent() {
                 title: "Acciones",
                 render: (user) => (
                     <Group className="flex flex-row items-center justify-center">
+                        <Tooltip label="Asignar Periodos Académicos">
+                            <ActionIcon
+                                color="green"
+                                variant="light"
+                                onClick={() => onClickEditAcademicPeriodsButton(user)}
+                            >
+                                <IconSchool />
+                            </ActionIcon>
+                        </Tooltip>
                         <Tooltip label="Editar">
                             <ActionIcon
                                 color="violet"
