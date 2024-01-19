@@ -5,6 +5,7 @@ import { Career } from "@/app/models/career.model";
 import { Role } from "@/app/models/role.model";
 import { User } from "@/app/models/user.model";
 import DataTable from "@/components/data-table";
+import { desEncriptar } from "@/lib/utils/aes";
 import Each from "@/lib/utils/each";
 import { ActionIcon, Badge, Button, Flex, Group, Modal, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -41,6 +42,7 @@ export default function TableUser() {
             role: getRolesNames(user.roles as Role[]).join(", "),
             fullName: `${user.names} ${user.surnames}`,
             career: getRolesNames(user.careers as Career[]).join(", "),
+            dni: desEncriptar(user.dni)
         }));
         setListUsers(users);
         listUsersRef.current = users;

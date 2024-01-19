@@ -6,6 +6,7 @@ import { encriptar } from "@/lib/utils/aes";
 export async function saveUserService(user: User) {
     const url = "/users";
     const password = encriptar(user.email);
-    const res = await API.post<ResponseRequest<User>>({ url: url, data: {...user, password} });
+    const dni = encriptar(user.dni);
+    const res = await API.post<ResponseRequest<User>>({ url: url, data: { ...user, password, dni } });
     return res;
 }

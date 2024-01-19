@@ -1,3 +1,5 @@
+import { AcademicPeriod } from "./academicPeriod.model";
+
 export interface Student {
     id: number,
     names: string,
@@ -7,5 +9,5 @@ export interface Student {
     phone: string,
     email: string,
     career: string,
-    periods?: string[]
+    academicPeriods?: string[] | AcademicPeriod[]
 }

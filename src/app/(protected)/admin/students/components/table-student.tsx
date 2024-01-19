@@ -1,21 +1,21 @@
 "use client";
-import { ActionIcon, Badge, Button, Chip, Container, Flex, Group, Modal, Select, TextInput, Tooltip } from "@mantine/core";
-import { IconEdit, IconFileTypeXls, IconShieldPlus, IconTrash, IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { DataTableColumn } from "mantine-datatable";
-import DataTable from "@/components/data-table";
-import { useDisclosure } from "@mantine/hooks";
-import Each from "@/lib/utils/each";
-import { toast } from "sonner";
 import ConfirmDialog from "@/app/(protected)/components/ConfirmDialog";
 import InputsFilters from "@/app/(protected)/components/InputsFilters";
+import { Faculty } from "@/app/models/faculty.models";
 import { Student } from "@/app/models/student.model";
-import FormStudent from "./form-student";
-import FormUpExcel from "./form-up-excel";
-import getStudentsService from "../services/getStudents.service";
+import DataTable from "@/components/data-table";
+import Each from "@/lib/utils/each";
+import { ActionIcon, Badge, Button, Flex, Group, Modal, Select, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconEdit, IconFileTypeXls, IconTrash } from "@tabler/icons-react";
+import { DataTableColumn } from "mantine-datatable";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCareersService } from "../../careers/services/getCareers.service";
 import { DataSelect } from "../../users/components/form-user";
-import { Faculty } from "@/app/models/faculty.models";
+import getStudentsService from "../services/getStudents.service";
+import FormStudent from "./form-student";
+import FormUpExcel from "./form-up-excel";
+import { AcademicPeriod } from "@/app/models/academicPeriod.model";
 
 const getConfirmMessage = (name: string): string => (`¿Seguro que desea eliminar al usuario ${name}?`)
 
@@ -30,7 +30,7 @@ export default function TableStudent() {
     const [labelCareer, setLabelCareer] = useState<string>('');
     const [listCareers, setListCareers] = useState<DataSelect[]>([]);
 
-    const getStudents = async (careerID: string, career:string) => {
+    const getStudents = async (careerID: string, career: string) => {
         const res = await getStudentsService(careerID!);
         if (res.data === null) return
         const users: Student[] = res.data.map(user => ({
@@ -53,7 +53,7 @@ export default function TableStudent() {
     const onClickEditButton = (student: Student) => {
         setSelectedStudent(student);
         open()
-    } 
+    }
 
     const onSubmitSuccess = async () => {
         close()
@@ -78,7 +78,7 @@ export default function TableStudent() {
         const res = await deleteStudentService(id);
         if (res.message === null) { toast.error("No se pudo eliminar al Usuario"); return };
          toast.success(res.message);*/
-        await getStudents(valueCareer, labelCareer); 
+        await getStudents(valueCareer, labelCareer);
     }
 
     const generalFilter = (value: string) => {
@@ -107,10 +107,10 @@ export default function TableStudent() {
 
         setValueCareer(selectedOption.value.toString());
         setLabelCareer(selectedOption.label);
-        const {label, value} = selectedOption;
+        const { label, value } = selectedOption;
         getStudents(value, label);
     }
-    
+
     useEffect(() => {
         getCareers();
     }, []);
@@ -122,6 +122,17 @@ export default function TableStudent() {
             { accessor: "email", title: "Email" },
             { accessor: "phone", title: "Teléfono" },
             { accessor: "career", title: "Carrera" },
+            {
+                accessor: "academicPeriods",
+                title: "Periodos Académicos",
+                render: (career) => (
+                    (career.academicPeriods?.length! < 1) ? <p>Asignar Periodo Académico</p> :
+                        <Group className="">
+                            <Each of={((career.academicPeriods! as AcademicPeriod[]))} render={(item, index) =>
+                                <Badge key={index} radius="md" size="lg" color="orange" >{`${item.name}`} </Badge>
+                            }></Each>
+                        </Group>)
+            },
             {
                 titleClassName: "text-center",
                 accessor: "actions",
