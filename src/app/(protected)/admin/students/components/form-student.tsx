@@ -59,7 +59,7 @@ export default function FormStudent({ onSubmitSuccess, onCancel, selectedStudent
     return (
         <Flex direction="column" p="lg">
 
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Usuario" : "Crear Usuario"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Usuario" : "Crear Usuario"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
                     <TextInput
@@ -74,11 +74,13 @@ export default function FormStudent({ onSubmitSuccess, onCancel, selectedStudent
                     <div className="flex flex-row gap-3" >
 
                         <TextInput
+                            maxLength={30}
                             withAsterisk
                             label="Nombres"
                             {...form.getInputProps("names")}
                         />
                         <TextInput
+                            maxLength={30}
                             withAsterisk
                             label="Apellidos"
                             {...form.getInputProps("surnames")}
@@ -93,6 +95,7 @@ export default function FormStudent({ onSubmitSuccess, onCancel, selectedStudent
 
                     <TextInput
                         withAsterisk
+                        maxLength={10}
                         label="Teléfono"
                         {...form.getInputProps("phone")}
                     />

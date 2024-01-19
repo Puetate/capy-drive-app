@@ -87,7 +87,7 @@ export default function FormCareerAcadPeriod({ onSubmitSuccess, onCancel, select
 
     return (
         <Flex direction="column" p="lg">
-            <Text className="text-center" mb="lg">{idRef.current ? "Editar Carrera" : "Crear Carrera"}</Text>
+            <Text className="text-center font-bold text-blue-500" mb="lg">{idRef.current ? "Editar Carrera" : "Crear Carrera"}</Text>
             <form onSubmit={form.onSubmit(handleSubmit)} >
                 <Flex direction="column" gap="md">
 

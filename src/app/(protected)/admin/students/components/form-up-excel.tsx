@@ -154,7 +154,7 @@ export default function FormUpExcel({ onSubmitSuccess, onCancel, selectedStudent
         <div>
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <div className="flex flex-col justify-center items-center">
-                    <Text className="text-center font-medium text-lg">Cargar Estudiantes</Text>
+                    <Text className="text-center text-lg font-bold text-blue-500">Cargar Estudiantes</Text>
                     <div className="w-full flex justify-start my-2">
                         <HoverCard width="auto" shadow="md">
                             <HoverCard.Target>
